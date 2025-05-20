@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Results for {{ stock }}</h2>
+<p>Total Trades: {{ results.total_trades }}</p>
+<p>Total Profit: ${{ results.total_profit }}</p>
+<p>Average Profit per Trade: ${{ results.average_profit }}</p>
+
+<h4>Trade History</h4>
+<table class="table table-bordered">
+    <thead><tr><th>Buy</th><th>Sell</th></tr></thead>
+    <tbody>
+    {% for buy, sell in results.trades %}
+        <tr><td>${{ buy }}</td><td>${{ sell }}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+<a href="/" class="btn btn-secondary">Back</a>
+
+<h4>Portfolio Value Chart</h4>
+<div id="chart"></div>
+
+<h4>Candlestick Chart (Last 100 Days)</h4>
+<div id="candlestick"></div>
+
+<h4>Drawdown Chart</h4>
+<div id="drawdown"></div>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script>
+    var trades = {{ results.trades | tojson | safe }};
+    var x = [];
+    var y = [];
+    var balance = 0;
+    for (let i = 0; i < trades.length; i++) {
+        x.push(i + 1);
+        let profit = trades[i][1] - trades[i][0];
+        y.push(i === 0 ? profit : y[i - 1] + profit);
+    }
+    // Convert profit to INR (assume 1 USD = 83 INR for demo)
+    var y_inr = y.map(function(val) { return val * 83; });
+    var trace = {
+        x: x,
+        y: y_inr,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'PnL (INR)'
+    };
+    Plotly.newPlot('chart', [trace], {
+        title: 'Cumulative Profit (INR)',
+        xaxis: { title: 'Trade Number' },
+        yaxis: { title: 'Profit (₹)' }
+    });
+
+    // Candlestick chart using last 100 days of data
+    {% if results.candles %}
+    var candle = {{ results.candles | tojson | safe }};
+    var candle_trace = {
+        x: candle.dates,
+        open: candle.open,
+        high: candle.high,
+        low: candle.low,
+        close: candle.close,
+        type: 'candlestick',
+        name: 'Candles'
+    };
+    Plotly.newPlot('candlestick', [candle_trace], {
+        title: 'Candlestick Chart (Last 100 Days)',
+        xaxis: { title: 'Date' },
+        yaxis: { title: 'Price' }
+    });
+    // Drawdown chart
+    var max_y = 0;
+    var drawdown = [];
+    for (let i = 0; i < y_inr.length; i++) {
+        max_y = Math.max(max_y, y_inr[i]);
+        drawdown.push(y_inr[i] - max_y);
+    }
+    var dd_trace = {
+        x: x,
+        y: drawdown,
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Drawdown (INR)'
+    };
+    Plotly.newPlot('drawdown', [dd_trace], {
+        title: 'Drawdown (INR)',
+        xaxis: { title: 'Trade Number' },
+        yaxis: { title: 'Drawdown (₹)' }
+    });
+    {% endif %}
+</script>
+{% endblock %}
