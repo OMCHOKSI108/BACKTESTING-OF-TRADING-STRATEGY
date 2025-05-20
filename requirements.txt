@@ -1,0 +1,7 @@
+Flask
+requests
+python-dotenv
+matplotlib
+pandas
+plotly
+openai  # or google-generativeai if you're using Gemini's Python SDK

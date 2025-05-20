@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>Predefined ORB & EMA Crossover Strategies</h2>
+
+<div class="alert alert-info">
+    <strong>ORB Strategy:</strong> This intraday strategy uses the first 30 minutes high-low range as the breakout zone. It uses CPR (Central Pivot Range), VWAP, and ATR for better signal confirmation. Entry is after 9:45 AM breakout, and targets are 1–2% with risk managed by ATR-based stop loss.<br>
+    <strong>EMA Crossover:</strong> Buy when 9 EMA crosses above 21 EMA, sell when 9 EMA crosses below 21 EMA.
+</div>
+
+<form method="POST">
+    <div class="mb-3">
+        <label>Select Stock:</label>
+        <select name="stock" class="form-control" required>
+            <option value="RELIANCE.NS">RELIANCE.NS</option>
+            <option value="TCS.NS">TCS.NS</option>
+            <option value="INFY.NS">INFY.NS</option>
+            <option value="HDFCBANK.NS">HDFCBANK.NS</option>
+            <option value="ICICIBANK.NS">ICICIBANK.NS</option>
+            <option value="SBIN.NS">SBIN.NS</option>
+            <option value="KOTAKBANK.NS">KOTAKBANK.NS</option>
+            <option value="LT.NS">LT.NS</option>
+            <option value="ITC.NS">ITC.NS</option>
+            <option value="AXISBANK.NS">AXISBANK.NS</option>
+            <option value="BAJFINANCE.NS">BAJFINANCE.NS</option>
+            <option value="HCLTECH.NS">HCLTECH.NS</option>
+            <option value="WIPRO.NS">WIPRO.NS</option>
+            <option value="SUNPHARMA.NS">SUNPHARMA.NS</option>
+            <option value="ULTRACEMCO.NS">ULTRACEMCO.NS</option>
+            <option value="TITAN.NS">TITAN.NS</option>
+            <option value="MARUTI.NS">MARUTI.NS</option>
+            <option value="NESTLEIND.NS">NESTLEIND.NS</option>
+            <option value="POWERGRID.NS">POWERGRID.NS</option>
+            <option value="ONGC.NS">ONGC.NS</option>
+            <option value="AAPL">AAPL</option>
+            <option value="MSFT">MSFT</option>
+            <option value="GOOGL">GOOGL</option>
+            <!-- Add more as needed -->
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Strategy:</label>
+        <select name="strategy" class="form-control" required>
+            <option value="orb">ORB (Opening Range Breakout)</option>
+            <option value="ema_crossover">EMA Crossover</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label>Duration:</label>
+        <select name="duration" class="form-control">
+            <option value="1Y">1 Year</option>
+            <option value="2Y">2 Years</option>
+            <option value="3Y">3 Years</option>
+            <option value="5Y">5 Years</option>
+            <option value="ALL">All</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Run Strategy</button>
+</form>
+{% if error %}
+<div class="alert alert-danger mt-3">{{ error }}</div>
+{% endif %}
+{% endblock %}
