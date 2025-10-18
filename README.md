@@ -12,6 +12,8 @@ A comprehensive web application for backtesting trading strategies across multip
 
 - [Features](#features)- [Features](#features)
 
+- [Screenshots](#screenshots)- [Screenshots](#screenshots)
+
 - [Architecture](#architecture)- [Architecture](#architecture)
 
 - [Technical Insights](#technical-insights)- [Technical Insights](#technical-insights)
@@ -68,881 +70,700 @@ A comprehensive web application for backtesting trading strategies across multip
 
 ### Application Dashboard### Application Dashboard
 
-![Trading Strategy Backtester Dashboard](assets/trades.png)
+![Trading Strategy Backtester Dashboard](assets/trades.png)![Trading Strategy Backtester Dashboard](assets/trades.png)
 
-*Main application interface showing strategy selection, market configuration, and data gathering controls.*
+*Main application interface showing strategy selection, market configuration, and data gathering controls.**Main application interface showing strategy selection, market configuration, and data gathering controls.*
+
+
 
 ### Performance Analytics### Performance Analytics
 
-![Performance Metrics](assets/performance.png)
+![Performance Metrics](assets/performance.png)![Performance Metrics](assets/performance.png)
 
-*Comprehensive performance metrics including Sharpe Ratio, Sortino Ratio, Max Drawdown, and equity curves.*
+*Comprehensive performance metrics including Sharpe Ratio, Sortino Ratio, Max Drawdown, and equity curves.**Comprehensive performance metrics including Sharpe Ratio, Sortino Ratio, Max Drawdown, and equity curves.*
+
+
 
 ### Trade History Analysis### Trade History Analysis
 
-![Trade History](assets/trade_history.png)
+![Trade History](assets/trade_history.png)![Trade History](assets/trade_history.png)
 
-*Detailed trade history with P&L analysis, win/loss ratios, and trade timing information.*
+*Detailed trade history with P&L analysis, win/loss ratios, and trade timing information.**Detailed trade history with P&L analysis, win/loss ratios, and trade timing information.*
+
+
 
 ### Docker Deployment### Docker Deployment
 
-![Docker Setup](assets/docker.png)
+![Docker Setup](assets/docker.png)![Docker Setup](assets/docker.png)
 
-*Docker containerization setup for easy deployment and scaling.*
+*Docker containerization setup for easy deployment and scaling.**Docker containerization setup for easy deployment and scaling.*
 
 
 
-## Architecture## Architecture
+## Architecture## Architecture## Architecture
 
 
 
-``````
+`````````
 
-trading-backtester/trading-backtester/
+trading-backtester/trading-backtester/trading-backtester/
 
-├── app/├── app/
+├── app/├── app/├── app/
 
-│   ├── strategies/          # Trading strategy implementations│   ├── strategies/          # Trading strategy implementations
+│   ├── strategies/          # Trading strategy implementations│   ├── strategies/          # Trading strategy implementations│   ├── strategies/          # Trading strategy implementations
 
-│   │   ├── strategy1.py     # SMA Crossover Strategy│   │   ├── strategy1.py     # SMA Crossover Strategy
+│   │   ├── strategy1.py     # SMA Crossover Strategy│   │   ├── strategy1.py     # SMA Crossover Strategy│   │   ├── strategy1.py     # SMA Crossover Strategy
 
-│   │   ├── strategy2.py     # RSI Mean Reversion Strategy│   │   ├── strategy2.py     # RSI Mean Reversion Strategy
+│   │   ├── strategy2.py     # RSI Mean Reversion Strategy│   │   ├── strategy2.py     # RSI Mean Reversion Strategy│   │   ├── strategy2.py     # RSI Mean Reversion Strategy
 
-│   │   ├── strategy3.py     # Bollinger Bands Strategy│   │   ├── strategy3.py     # Bollinger Bands Strategy
+│   │   ├── strategy3.py     # Bollinger Bands Strategy│   │   ├── strategy3.py     # Bollinger Bands Strategy│   │   ├── strategy3.py     # Bollinger Bands Strategy
 
-│   │   ├── strategy4.py     # MACD Crossover Strategy│   │   ├── strategy4.py     # MACD Crossover Strategy
+│   │   ├── strategy4.py     # MACD Crossover Strategy│   │   ├── strategy4.py     # MACD Crossover Strategy│   │   ├── strategy4.py     # MACD Crossover Strategy
 
-│   │   └── strategy5.py     # Multi-Indicator Strategy│   │   └── strategy5.py     # Multi-Indicator Strategy
+│   │   └── strategy5.py     # Multi-Indicator Strategy│   │   └── strategy5.py     # Multi-Indicator Strategy│   │   └── strategy5.py     # Multi-Indicator Strategy
 
-│   ││   │
+│   ││   ││   │
 
-│   ├── services/            # Core business logic│   ├── services/            # Core business logic
+│   ├── services/            # Core business logic│   ├── services/            # Core business logic│   ├── services/            # Core business logic
 
-│   │   ├── data_service.py  # Multi-API data fetching with caching│   │   ├── data_service.py  # Multi-API data fetching with caching
+│   │   ├── data_service.py  # Multi-API data fetching with caching│   │   ├── data_service.py  # Multi-API data fetching with caching│   │   ├── data_service.py  # Multi-API data fetching with caching
 
-│   │   ├── backtest_service.py # Strategy execution and metrics calculation│   │   ├── backtest_service.py # Strategy execution and metrics calculation
+│   │   ├── backtest_service.py # Strategy execution and metrics calculation│   │   ├── backtest_service.py # Strategy execution and metrics calculation│   │   ├── backtest_service.py # Strategy execution and metrics calculation
 
-│   │   ├── report_service.py # PDF report generation│   │   ├── report_service.py # PDF report generation
+│   │   ├── report_service.py # PDF report generation│   │   ├── report_service.py # PDF report generation│   │   ├── report_service.py # PDF report generation
 
-│   │   └── crypto_forex_data_service.py # Advanced forex data handling│   │   └── crypto_forex_data_service.py # Advanced forex data handling
+│   │   └── crypto_forex_data_service.py # Advanced forex data handling│   │   └── crypto_forex_data_service.py # Advanced forex data handling│   │   └── crypto_forex_data_service.py # Advanced forex data handling
 
-│   ││   │
+│   ││   ││   │
 
-│   ├── routes/              # API endpoints│   ├── routes/              # API endpoints
+│   ├── routes/              # API endpoints│   ├── routes/              # API endpoints│   ├── routes/              # API endpoints
 
-│   │   ├── data_routes.py   # Data gathering and management APIs│   │   ├── data_routes.py   # Data gathering and management APIs
+│   │   ├── data_routes.py   # Data gathering and management APIs│   │   ├── data_routes.py   # Data gathering and management APIs│   │   ├── data_routes.py   # Data gathering and management APIs
 
-│   │   ├── strategy_routes.py # Strategy execution APIs│   │   ├── strategy_routes.py # Strategy execution APIs
+│   │   ├── strategy_routes.py # Strategy execution APIs│   │   ├── strategy_routes.py # Strategy execution APIs│   │   ├── strategy_routes.py # Strategy execution APIs
 
-│   │   ├── report_routes.py # Report generation APIs│   │   ├── report_routes.py # Report generation APIs
+│   │   ├── report_routes.py # Report generation APIs│   │   ├── report_routes.py # Report generation APIs│   │   ├── report_routes.py # Report generation APIs
 
-│   │   └── performance_routes.py # System monitoring APIs│   │   └── performance_routes.py # System monitoring APIs
+│   │   └── performance_routes.py # System monitoring APIs│   │   └── performance_routes.py # System monitoring APIs│   │   └── performance_routes.py # System monitoring APIs
 
-│   ││   │
+│   ││   ││   │
 
-│   ├── static/charts/       # Generated chart images│   ├── static/charts/       # Generated chart images
+│   ├── static/charts/       # Generated chart images│   ├── static/charts/       # Generated chart images│   ├── static/charts/       # Generated chart images
 
-│   ├── templates/           # HTML templates (legacy)│   ├── templates/           # HTML templates (legacy)
+│   ├── templates/           # HTML templates (legacy)│   ├── templates/           # HTML templates (legacy)│   ├── templates/           # HTML templates (legacy)
 
-│   ├── data/                # Data storage│   ├── data/                # Data storage
+│   ├── data/                # Data storage│   ├── data/                # Data storage│   ├── data/                # Data storage
 
-│   │   ├── raw/            # Raw API response data│   │   ├── raw/            # Raw API response data
+│   │   ├── raw/            # Raw API response data│   │   ├── raw/            # Raw API response data│   │   ├── raw/            # Raw API response data
 
-│   │   ├── processed/      # Cleaned and standardized data│   │   ├── processed/      # Cleaned and standardized data
+│   │   ├── processed/      # Cleaned and standardized data│   │   ├── processed/      # Cleaned and standardized data│   │   ├── processed/      # Cleaned and standardized data
 
-│   │   └── trade_history/  # Detailed trade execution logs│   │   └── trade_history/  # Detailed trade execution logs
+│   │   └── trade_history/  # Detailed trade execution logs│   │   └── trade_history/  # Detailed trade execution logs│   │   └── trade_history/  # Detailed trade execution logs
 
-│   └── reports/            # Generated PDF reports│   └── reports/            # Generated PDF reports
+│   └── reports/            # Generated PDF reports│   └── reports/            # Generated PDF reports│   └── reports/            # Generated PDF reports
 
-││
+│││
 
-├── streamlit_app.py         # Modern Streamlit frontend├── streamlit_app.py         # Modern Streamlit frontend
+├── streamlit_app.py         # Modern Streamlit frontend├── streamlit_app.py         # Modern Streamlit frontend├── streamlit_app.py         # Modern Streamlit frontend
 
-├── app.py                   # Flask application entry point├── app.py                   # Flask application entry point
+├── app.py                   # Flask application entry point├── app.py                   # Flask application entry point├── app.py                   # Flask application entry point
 
-├── requirements.txt         # Python dependencies├── requirements.txt         # Python dependencies
+├── requirements.txt         # Python dependencies├── requirements.txt         # Python dependencies├── requirements.txt         # Python dependencies
 
-├── Dockerfile              # Container configuration├── Dockerfile              # Container configuration
+├── Dockerfile              # Container configuration├── Dockerfile              # Container configuration├── Dockerfile              # Container configuration
 
-├── docker-compose.yml      # Multi-service orchestration├── docker-compose.yml      # Multi-service orchestration
+├── docker-compose.yml      # Multi-service orchestration├── docker-compose.yml      # Multi-service orchestration├── docker-compose.yml      # Multi-service orchestration
 
-└── README.md└── README.md
+└── README.md└── README.md└── README.md
 
-``````
+`````````
 
 
 
-## Technical Insights## Technical Insights
+## Technical Insights## Technical Insights## Technical Insights
 
 
 
-### Data Pipeline Architecture### Data Pipeline Architecture
+### Data Pipeline Architecture### Data Pipeline Architecture### Data Pipeline Architecture
 
 
 
-The system implements a sophisticated multi-layer data pipeline:The system implements a sophisticated multi-layer data pipeline:
+The system implements a sophisticated multi-layer data pipeline:The system implements a sophisticated multi-layer data pipeline:The system implements a sophisticated multi-layer data pipeline:
 
 
 
-1. **Data Acquisition Layer**1. **Data Acquisition Layer**
+1. **Data Acquisition Layer**1. **Data Acquisition Layer**1. **Data Acquisition Layer**
 
-   - Yahoo Finance: Primary source with automatic fallback   - Yahoo Finance: Primary source with automatic fallback
+   - Yahoo Finance: Primary source with automatic fallback   - Yahoo Finance: Primary source with automatic fallback   - Yahoo Finance: Primary source with automatic fallback
 
-   - Finnhub API: Alternative forex and global market data   - Finnhub API: Alternative forex and global market data
+   - Finnhub API: Alternative forex and global market data   - Finnhub API: Alternative forex and global market data   - Finnhub API: Alternative forex and global market data
 
-   - Alpha Vantage: Supplementary data validation   - Alpha Vantage: Supplementary data validation
+   - Alpha Vantage: Supplementary data validation   - Alpha Vantage: Supplementary data validation   - Alpha Vantage: Supplementary data validation
 
-   - Currency Layer: Real-time forex rates   - Currency Layer: Real-time forex rates
+   - Currency Layer: Real-time forex rates   - Currency Layer: Real-time forex rates   - Currency Layer: Real-time forex rates
 
 
 
-2. **Data Processing Layer**2. **Data Processing Layer**
+2. **Data Processing Layer**2. **Data Processing Layer**2. **Data Processing Layer**
 
-   - Standardization: All data normalized to OHLCV format   - Standardization: All data normalized to OHLCV format
+   - Standardization: All data normalized to OHLCV format   - Standardization: All data normalized to OHLCV format   - Standardization: All data normalized to OHLCV format
 
-   - MultiIndex Handling: Complex column structures flattened   - MultiIndex Handling: Complex column structures flattened
+   - MultiIndex Handling: Complex column structures flattened   - MultiIndex Handling: Complex column structures flattened   - MultiIndex Handling: Complex column structures flattened
 
-   - Caching Strategy: SQLite-based with TTL and market-specific bypass   - Caching Strategy: SQLite-based with TTL and market-specific bypass
+   - Caching Strategy: SQLite-based with TTL and market-specific bypass   - Caching Strategy: SQLite-based with TTL and market-specific bypass   - Caching Strategy: SQLite-based with TTL and market-specific bypass
 
-   - Error Recovery: Automatic retry with exponential backoff   - Error Recovery: Automatic retry with exponential backoff
+   - Error Recovery: Automatic retry with exponential backoff   - Error Recovery: Automatic retry with exponential backoff   - Error Recovery: Automatic retry with exponential backoff
 
 
 
-3. **Strategy Execution Engine**3. **Strategy Execution Engine**
+3. **Strategy Execution Engine**3. **Strategy Execution Engine**3. **Strategy Execution Engine**
 
-   - Concurrent Processing: Multi-threaded backtesting   - Concurrent Processing: Multi-threaded backtesting
+   - Concurrent Processing: Multi-threaded backtesting   - Concurrent Processing: Multi-threaded backtesting   - Concurrent Processing: Multi-threaded backtesting
 
-   - Memory Optimization: Pandas DataFrame operations   - Memory Optimization: Pandas DataFrame operations
+   - Memory Optimization: Pandas DataFrame operations   - Memory Optimization: Pandas DataFrame operations   - Memory Optimization: Pandas DataFrame operations
 
-   - Position Tracking: Real-time portfolio state management   - Position Tracking: Real-time portfolio state management
+   - Position Tracking: Real-time portfolio state management   - Position Tracking: Real-time portfolio state management   - Position Tracking: Real-time portfolio state management
 
-   - Risk Management: Configurable stop-loss and position sizing   - Risk Management: Configurable stop-loss and position sizing
+   - Risk Management: Configurable stop-loss and position sizing   - Risk Management: Configurable stop-loss and position sizing   - Risk Management: Configurable stop-loss and position sizing
 
 
 
-### Performance Optimizations### Performance Optimizations
+### Performance Optimizations### Performance Optimizations### Performance Optimizations
 
 
 
-- **Caching Layer**: Multi-level caching prevents redundant API calls- **Caching Layer**: Multi-level caching prevents redundant API calls
+- **Caching Layer**: Multi-level caching prevents redundant API calls- **Caching Layer**: Multi-level caching prevents redundant API calls- **Caching Layer**: Multi-level caching prevents redundant API calls
 
-- **Async Operations**: Concurrent data fetching improves response times- **Async Operations**: Concurrent data fetching improves response times
+- **Async Operations**: Concurrent data fetching improves response times- **Async Operations**: Concurrent data fetching improves response times- **Async Operations**: Concurrent data fetching improves response times
 
-- **Memory Management**: DataFrame chunking for large datasets- **Memory Management**: DataFrame chunking for large datasets
+- **Memory Management**: DataFrame chunking for large datasets- **Memory Management**: DataFrame chunking for large datasets- **Memory Management**: DataFrame chunking for large datasets
 
-- **Database Indexing**: Optimized SQLite queries for historical data- **Database Indexing**: Optimized SQLite queries for historical data
+- **Database Indexing**: Optimized queries for historical data retrieval- **Database Indexing**: Optimized SQLite queries for historical data- **Database Indexing**: Optimized SQLite queries for historical data
 
-
+- **Connection Pooling**: Efficient API connection management
 
 ### API Design Patterns### API Design Patterns
 
-
+### API Design Patterns
 
 - **Blueprint Architecture**: Modular Flask routing with URL prefixes- **Blueprint Architecture**: Modular Flask routing with URL prefixes
 
-- **Service Layer Pattern**: Separation of business logic from API endpoints- **Service Layer Pattern**: Separation of business logic from API endpoints
+- **RESTful Endpoints**: Consistent HTTP method usage- **Service Layer Pattern**: Separation of business logic from API endpoints- **Service Layer Pattern**: Separation of business logic from API endpoints
 
-- **Error Handling**: Comprehensive exception handling with proper HTTP status codes- **Error Handling**: Comprehensive exception handling with proper HTTP status codes
+- **Error Handling**: Comprehensive exception management with meaningful messages- **Error Handling**: Comprehensive exception handling with proper HTTP status codes- **Error Handling**: Comprehensive exception handling with proper HTTP status codes
 
-- **Response Standardization**: Consistent JSON response formats across all endpoints- **Response Standardization**: Consistent JSON response formats across all endpoints
+- **Rate Limiting**: Built-in protection against API quota exhaustion- **Response Standardization**: Consistent JSON response formats across all endpoints- **Response Standardization**: Consistent JSON response formats across all endpoints
 
+- **Response Caching**: Intelligent caching with configurable TTL
 
-
-## Quick Start## Quick Start
-
-
-
-### Option 1: Docker (Recommended)### Option 1: Docker (Recommended)
+- **Health Checks**: System monitoring and diagnostic endpoints## Quick Start## Quick Start
 
 
 
-```bash```bash
+## Quick Start### Option 1: Docker (Recommended)### Option 1: Docker (Recommended)
+
+
+
+### Option 1: Docker (Recommended)```bash```bash
 
 # Clone repository# Clone repository
 
+```bashgit clone https://github.com/OMCHOKSI108/BACKTESTING-OF-TRADING-STRATEGY.git
+
+# Clone the repositorycd BACKTESTING-OF-TRADING-STRATEGYcd BACKTESTING-OF-TRADING-STRATEGY
+
 git clone https://github.com/OMCHOKSI108/BACKTESTING-OF-TRADING-STRATEGY.git
 
-cd BACKTESTING-OF-TRADING-STRATEGYcd BACKTESTING-OF-TRADING-STRATEGY
-
-
-
-# Start all services# Start all services
+cd BACKTESTING-OF-TRADING-STRATEGY# Start all services# Start all services
 
 docker-compose up --builddocker-compose up --build
 
+# Start the application
 
-
-# Access the application# Access the application
+docker-compose up -d# Access the application# Access the application
 
 # Frontend: http://localhost:8501# Frontend: http://localhost:8501
 
-# Backend API: http://localhost:3000# Backend API: http://localhost:3000
+# Access the application# Backend API: http://localhost:3000# Backend API: http://localhost:3000
 
-``````
+# Streamlit UI: http://localhost:8501``````
+
+# Flask API: http://localhost:3000
+
+```### Option 2: Local Development### Option 2: Local Development
 
 
 
-### Option 2: Local Development### Option 2: Local Development
-
-
-
-```bash```bash
+### Option 2: Local Development```bash```bash
 
 # Install dependencies# Install dependencies
 
-pip install -r requirements.txtpip install -r requirements.txt
+```bashpip install -r requirements.txtpip install -r requirements.txt
 
+# Install dependencies
 
-
-# Set up environment variables (optional)# Set up environment variables (optional)
+pip install -r requirements.txt# Set up environment variables (optional)# Set up environment variables (optional)
 
 cp .env.example .envcp .env.example .env
 
-# Edit .env with your API keys# Edit .env with your API keys
+# Set environment variables# Edit .env with your API keys# Edit .env with your API keys
+
+export GEMINI_API_KEY="your_gemini_key"
+
+export FINNHUB_API_KEY="your_finnhub_key"# Run Flask backend# Run Flask backend
+
+export ALPHA_VANTAGE_API_KEY="your_alpha_vantage_key"python app.py flaskpython app.py flask
 
 
 
-# Run Flask backend# Run Flask backend
+# Run Flask backend# Run Streamlit frontend (in another terminal)# Run Streamlit frontend (in another terminal)
 
-python app.py flaskpython app.py flask
-
-
-
-# Run Streamlit frontend (in another terminal)# Run Streamlit frontend (in another terminal)
-
-python app.py streamlitpython app.py streamlit
+python app.py flaskpython app.py streamlitpython app.py streamlit
 
 
 
-# Access the application# Access the application
+# Run Streamlit frontend (in another terminal)# Access the application# Access the application
 
-# Frontend: http://localhost:8501# Frontend: http://localhost:8501
+python app.py streamlit# Frontend: http://localhost:8501# Frontend: http://localhost:8501
 
-# Backend API: http://localhost:3000# Backend API: http://localhost:3000
+```# Backend API: http://localhost:3000# Backend API: http://localhost:3000
 
 ``````
 
-
+### Option 3: Direct Execution
 
 ### Option 3: Direct Execution### Option 3: Direct Execution
 
+```bash
 
+# Run Streamlit app directly```bash```bash
 
-```bash```bash
-
-# Run both services simultaneously# Run both services simultaneously
+streamlit run streamlit_app.py# Run both services simultaneously# Run both services simultaneously
 
 python app.py bothpython app.py both
 
+# Or run Flask app directly
 
+python app.py# Or run individual components# Or run individual components
 
-# Or run individual components# Or run individual components
-
-python streamlit_app.py  # Frontend onlypython streamlit_app.py  # Frontend only
+```python streamlit_app.py  # Frontend onlypython streamlit_app.py  # Frontend only
 
 python -c "from app import create_app; app = create_app(); app.run(port=3000)"  # Backend onlypython -c "from app import create_app; app = create_app(); app.run(port=3000)"  # Backend only
 
-``````
+## Usage Workflow``````
 
 
-# Usage Workflow
 
-**1. **Data Configuration**
+1. **Select Market & Symbol**: Choose from Forex, Indian Stocks, or US Stocks
 
-   - Select market type (Forex, Indian Stocks, US Stocks)   - Select market type (Forex, Indian Stocks, US Stocks)
+2. **Configure Parameters**: Set timeframe, date range, and initial balance
 
-   - Enter trading symbol (e.g., EURUSD, RELIANCE.NS, AAPL)   - Enter trading symbol (e.g., EURUSD, RELIANCE.NS, AAPL)
+3. **Gather Data**: Click "Gather Data" to fetch and cache market data
 
-   - Choose timeframe and date range   - Choose timeframe and date range
+4. **Run Strategy**: Select from 5 professional strategies and execute backtest
 
-   - Set initial portfolio balance   - Set initial portfolio balance
+5. **Analyze Results**: Review performance metrics, charts, and trade history
 
+6. **Export Report**: Generate comprehensive PDF report with all findings
 
 
-2. **Data Gathering**2. **Data Gathering**
 
-   - Click "Gather Data" to fetch historical market data   - Click "Gather Data" to fetch historical market data
+## API Endpoints
 
-   - Data automatically saved to `/app/data/raw/` and `/app/data/processed/`   - Data automatically saved to `/app/data/raw/` and `/app/data/processed/`
 
-   - Progress indicators show real-time fetching status   - Progress indicators show real-time fetching status
-
-
-
-3. **Strategy Execution**3. **Strategy Execution**
-
-   - Select individual strategies or run comparison analysis   - Select individual strategies or run comparison analysis
-
-   - View live metrics including P&L, win rate, and drawdown   - View live metrics including P&L, win rate, and drawdown
-
-   - Interactive charts display equity curves and trade signals   - Interactive charts display equity curves and trade signals
-
-
-
-4. **Report Generation**4. **Report Generation**
-
-   - Generate comprehensive PDF reports   - Generate comprehensive PDF reports
-
-   - Include performance metrics, charts, and trade history   - Include performance metrics, charts, and trade history
-
-   - Download reports for further analysis   - Download reports for further analysis
-
-
-
-## API Endpoints## API Endpoints
-
-
-
-### Data Management### Data Management
-
-- `POST /api/data/gather` - Fetch and process market data- `POST /api/data/gather` - Fetch and process market data
-
-- `GET /api/data/status` - Check data availability for symbol- `GET /api/data/status` - Check data availability for symbol
-
-- `GET /api/data/preview` - Preview stored data with pagination- `GET /api/data/preview` - Preview stored data with pagination
-
-
-
-### Strategy Execution### Strategy Execution
-
-- `POST /api/strategy/run/{id}` - Execute specific strategy (1-5)- `POST /api/strategy/run/{id}` - Execute specific strategy (1-5)
-
-- `POST /api/strategy/compare` - Compare multiple strategies simultaneously- `POST /api/strategy/compare` - Compare multiple strategies simultaneously
-
-- `GET /api/strategy/list` - List available strategies and descriptions- `GET /api/strategy/list` - List available strategies and descriptions
-
-
-
-### Report Generation### Report Generation
-
-- `POST /api/report/generate` - Create PDF report for strategy results- `POST /api/report/generate` - Create PDF report for strategy results
-
-- `POST /api/report/compare` - Generate comparison report for multiple strategies- `POST /api/report/compare` - Generate comparison report for multiple strategies
-
-- `GET /api/report/download/{filename}` - Download generated PDF reports- `GET /api/report/download/{filename}` - Download generated PDF reports
-
-
-
-### System Monitoring### System Monitoring
-
-- `GET /api/performance/health` - System health check and status- `GET /api/performance/health` - System health check and status
-
-- `GET /api/data/info` - Data service information and capabilities- `GET /api/data/info` - Data service information and capabilities
-
-- `GET /api/strategy/info` - Strategy service information- `GET /api/strategy/info` - Strategy service information
-
-
-
-## Performance Metrics## Performance Metrics
-
-
-
-The system calculates comprehensive trading performance metrics:The system calculates comprehensive trading performance metrics:
-
-
-
-- **Net Profit/Loss** - Total portfolio return in currency units- **Net Profit/Loss** - Total portfolio return in currency units
-
-- **Gross Profit/Loss** - Sum of all winning/losing trades- **Gross Profit/Loss** - Sum of all winning/losing trades
-
-- **Win Rate** - Percentage of profitable trades (0-100%)- **Win Rate** - Percentage of profitable trades (0-100%)
-
-- **Profit Factor** - Gross profit divided by gross loss (>1 indicates profitability)- **Profit Factor** - Gross profit divided by gross loss (>1 indicates profitability)
-
-- **Sharpe Ratio** - Risk-adjusted return measure (higher is better)- **Sharpe Ratio** - Risk-adjusted return measure (higher is better)
-
-- **Sortino Ratio** - Downside risk-adjusted return (higher is better)- **Sortino Ratio** - Downside risk-adjusted return (higher is better)
-
-- **Max Drawdown** - Largest peak-to-valley portfolio decline- **Max Drawdown** - Largest peak-to-valley portfolio decline
-
-- **Average Trade P&L** - Mean profit/loss per trade- **Average Trade P&L** - Mean profit/loss per trade
-
-- **Total Trades** - Number of executed trades- **Total Trades** - Number of executed trades
-
-- **Equity Curve** - Portfolio value progression over time- **Equity Curve** - Portfolio value progression over time
-
-- **Trade History** - Detailed log of all trade executions- **Trade History** - Detailed log of all trade executions
-
-
-
-## Configuration## Configuration
-
-
-
-### API Keys Setup### API Keys Setup
-
-
-
-#### Finnhub API (Free tier available)#### Finnhub API (Free tier available)
-
-```bash```bash
-
-# Get API key from https://finnhub.io# Get API key from https://finnhub.io
-
-echo "FINNHUB_API_KEY=your_finnhub_key" >> .envecho "FINNHUB_API_KEY=your_finnhub_key" >> .env
-
-``````
-
-
-
-#### Alpha Vantage API (Free tier available)#### Alpha Vantage API (Free tier available)
-
-```bash```bash
-
-# Get API key from https://www.alphavantage.co# Get API key from https://www.alphavantage.co
-
-echo "ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key" >> .envecho "ALPHA_VANTAGE_API_KEY=your_alpha_vantage_key" >> .env
-
-``````
-
-
-
-#### Yahoo Finance#### Yahoo Finance
-
-- No API key required (free public access)- No API key required (free public access)
-
-
-
-### Environment Variables### Environment Variables
-
-
-
-```bash```bash
-
-# Flask Configuration# Flask Configuration
-
-FLASK_ENV=development  # or productionFLASK_ENV=development  # or production
-
-SECRET_KEY=your_secret_keySECRET_KEY=your_secret_key
-
-
-
-# API Keys# API Keys
-
-FINNHUB_API_KEY=your_keyFINNHUB_API_KEY=your_key
-
-ALPHA_VANTAGE_API_KEY=your_keyALPHA_VANTAGE_API_KEY=your_key
-
-
-
-# Docker Configuration# Docker Configuration
-
-DOCKER_ENV=false  # Set to true when running in containersDOCKER_ENV=false  # Set to true when running in containers
-
-``````
-
-
-
-## Development## Development
-
-
-
-### Adding New Strategies### Adding New Strategies
-
-
-
-1. Create new strategy file in `app/strategies/`1. Create new strategy file in `app/strategies/`
-
-```python```python
-
-def strategy_6_custom_strategy(df, initial_balance=100000):def strategy_6_custom_strategy(df, initial_balance=100000):
-
-    """    """
-
-    Custom strategy implementation    Custom strategy implementation
-
-    Must return standardized results dictionary    Must return standardized results dictionary
-
-    """    """
-
-    # Strategy logic here    # Strategy logic here
-
-    return {    return {
-
-        "total_trades": trade_count,        "total_trades": trade_count,
-
-        "net_profit_loss": net_pnl,        "net_profit_loss": net_pnl,
-
-        "win_rate": win_rate,        "win_rate": win_rate,
-
-        "trades": trade_list,        "trades": trade_list,
-
-        "candles": processed_data        "candles": processed_data
-
-    }    }
-
-``````
-
-
-
-2. Update strategy routes in `app/routes/strategy_routes.py`2. Update strategy routes in `app/routes/strategy_routes.py`
-
-3. Add strategy mapping and update frontend interface3. Add strategy mapping and update frontend interface
-
-
-
-### Extending Data Sources### Extending Data Sources
-
-
-
-1. Add new data provider in `app/services/data_service.py`1. Add new data provider in `app/services/data_service.py`
-
-2. Implement fetch method following existing patterns2. Implement fetch method following existing patterns
-
-3. Update market type mappings and error handling3. Update market type mappings and error handling
-
-
-
-### Custom Metrics### Custom Metrics
-
-
-
-Modify `app/services/backtest_service.py` to add new performance calculations:Modify `app/services/backtest_service.py` to add new performance calculations:
-
-
-
-```python```python
-
-def calculate_custom_metric(self, trades, equity_curve):def calculate_custom_metric(self, trades, equity_curve):
-
-    # Custom metric calculation    # Custom metric calculation
-
-    return custom_value    return custom_value
-
-``````
-
-
-
-## Sample Results## Sample Results
-
-
-
-### Strategy Performance Example### Strategy Performance Example
-
-
-
-``````
-
-Strategy: SMA Crossover (9/21)Strategy: SMA Crossover (9/21)
-
-Symbol: AAPLSymbol: AAPL
-
-Period: 2023-01-01 to 2024-01-01Period: 2023-01-01 to 2024-01-01
-
-Initial Balance: $100,000Initial Balance: $100,000
-
-
-
-Performance Metrics:Performance Metrics:
-
-- Net P&L: $12,450.67- Net P&L: $12,450.67
-
-- Win Rate: 58.3%- Win Rate: 58.3%
-
-- Sharpe Ratio: 1.24- Sharpe Ratio: 1.24
-
-- Max Drawdown: -$2,180.50- Max Drawdown: -$2,180.50
-
-- Total Trades: 127- Total Trades: 127
-
-- Profit Factor: 1.67- Profit Factor: 1.67
-
-- Average Trade P&L: $98.04- Average Trade P&L: $98.04
-
-
-
-Equity Curve: Available in generated PDF reportEquity Curve: Available in generated PDF report
-
-Trade History: 127 trades logged with timestampsTrade History: 127 trades logged with timestamps
-
-``````
-
-
-
-### Data Processing Example### Data Processing Example
-
-
-
-``````
-
-Data Gathering: EURUSD (Forex)Data Gathering: EURUSD (Forex)
-
-Timeframe: 30mTimeframe: 30m
-
-Period: 2024-01-01 to 2024-10-18Period: 2024-01-01 to 2024-10-18
-
-
-
-Raw Data: 10,368 candles fetchedRaw Data: 10,368 candles fetched
-
-Processed Data: 10,368 candles standardizedProcessed Data: 10,368 candles standardized
-
-Cache Status: Forex data bypass enabledCache Status: Forex data bypass enabled
-
-Processing Time: 2.3 secondsProcessing Time: 2.3 seconds
-
-Data Quality: 100% OHLCV complianceData Quality: 100% OHLCV compliance
-
-``````
-
-
-
-## Screenshots## Screenshots
-
-
-
-### Main Dashboard### Main Dashboard
-
-![Trading Strategy Backtester Main Dashboard](assets/img01.png)![Trading Strategy Backtester Main Dashboard](assets/img01.png)
-
-
-
-### Strategy Results and Analytics### Strategy Results and Analytics
-
-![Strategy Performance Analytics](assets/img02.png)![Strategy Performance Analytics](assets/img02.png)
-
-
-
-## Contributing## Contributing
-
-
-
-1. Fork the repository1. Fork the repository
-
-2. Create a feature branch (`git checkout -b feature/new-strategy`)2. Create a feature branch (`git checkout -b feature/new-strategy`)
-
-3. Implement changes with comprehensive tests3. Implement changes with comprehensive tests
-
-4. Ensure all tests pass (`python -m pytest tests/`)4. Ensure all tests pass (`python -m pytest tests/`)
-
-5. Submit a pull request with detailed description5. Submit a pull request with detailed description
-
-
-
-### Development Guidelines### Development Guidelines
-
-
-
-- Follow PEP 8 style guidelines- Follow PEP 8 style guidelines
-
-- Add type hints for new functions- Add type hints for new functions
-
-- Include comprehensive error handling- Include comprehensive error handling
-
-- Update documentation for API changes- Update documentation for API changes
-
-- Test with multiple market types and timeframes- Test with multiple market types and timeframes
-
-
-
-## License## License
-
-
-
-MIT License - see LICENSE file for details.MIT License - see LICENSE file for details.
-
-
-
-## Acknowledgments## Acknowledgments
-
-
-
-- Yahoo Finance for market data access- Yahoo Finance for market data access
-
-- Finnhub for alternative data sources- Finnhub for alternative data sources
-
-- Alpha Vantage for supplementary market data- Alpha Vantage for supplementary market data
-
-- Streamlit for modern web interface framework- Streamlit for modern web interface framework
-
-- Plotly for interactive data visualization- Plotly for interactive data visualization
-
-- ReportLab for PDF report generation- ReportLab for PDF report generation
-
-- Pandas and NumPy for data processing capabilities- Pandas and NumPy for data processing capabilities
-│   │   ├── strategy_routes.py # Strategy execution
-│   │   └── report_routes.py # Report generation
-│   │
-│   ├── static/charts/       # Generated chart images
-│   ├── templates/           # HTML templates
-│   ├── data/                # Data storage
-│   │   ├── raw/            # Raw API data
-│   │   ├── processed/      # Cleaned data
-│   │   └── trade_history/  # Trade logs
-│   └── reports/            # Generated PDF reports
-│
-├── streamlit_app.py         # Modern frontend
-├── run_enhanced.py          # Enhanced app runner
-├── requirements.txt         # Dependencies
-└── README.md
-```
-
----
-
-## ⚡ Quick Start
-
-### Option 1: Docker (Recommended)
-```bash
-# Clone and run with Docker Compose
-git clone <repository-url>
-cd trading-backtester
-
-# Start all services
-docker-compose up --build
-
-# Or run individual services
-docker-compose up trading-backtester  # Flask API only
-docker-compose up trading-ui          # Streamlit UI only
-```
-
-### Option 2: Local Development
-```bash
-pip install -r requirements.txt
-
-# Run Flask API
-python app.py flask
-
-# Run Streamlit UI (in another terminal)
-python app.py streamlit
-
-# Run both (experimental)
-python app.py both
-```
-
-This starts:
-- **Flask Backend API:** http://localhost:5000
-- **Streamlit Frontend:** http://localhost:8501
-
----
-
-## 🎯 Usage Workflow
-
-1. **Configure Inputs:**
-   - Enter symbol (e.g., `RELIANCE.NS`, `EURUSD=X`, `AAPL`)
-   - Select market type and timeframe
-   - Set date range and initial balance
-
-2. **Gather Data:**
-   - Click "🔍 Gather Data" to fetch market data
-   - Data is automatically saved to `/data/raw/` and `/data/processed/`
-
-3. **Run Strategies:**
-   - Select individual strategies or compare all
-   - View real-time metrics and equity curves
-
-4. **Generate Reports:**
-   - Create PDF reports with charts and analysis
-   - Download professional strategy reports
-
----
-
-## 🔧 API Endpoints
 
 ### Data Management
-- `POST /api/data/gather` - Fetch market data
+
 - `GET /api/data/status` - Check data availability
-- `GET /api/data/preview` - Preview stored data
+
+- `POST /api/data/gather` - Fetch market data
+
+- `GET /api/data/symbols` - List available symbols
+
+
 
 ### Strategy Execution
-- `POST /api/strategy/run/{id}` - Run specific strategy
-- `POST /api/strategy/compare` - Compare multiple strategies
-- `GET /api/strategy/list` - List available strategies
 
-### Report Generation
-- `POST /api/report/generate` - Generate PDF report
-- `POST /api/report/compare` - Generate comparison report
-- `GET /api/report/download/{filename}` - Download reports
+- `POST /api/strategy/{id}/run` - Execute specific strategy
 
----
+- `GET /api/strategy/{id}/status` - Check execution status
 
-## 📈 Metrics Calculated
+- `GET /api/strategy/{id}/results` - Retrieve results
 
-- **Net Profit/Loss** - Total portfolio return
-- **Gross Profit/Loss** - Total winning/losing amounts
-- **Win Rate** - Percentage of profitable trades
-- **Profit Factor** - Gross profit divided by gross loss
-- **Sharpe Ratio** - Risk-adjusted return measure
-- **Sortino Ratio** - Downside risk-adjusted return
-- **Max Drawdown** - Largest peak-to-valley decline
-- **Average Trade P&L** - Mean profit per trade
-- **Equity Curve** - Portfolio value over time
-- **Trade History** - Detailed trade log with timestamps
 
----
 
-## 🔑 API Keys Setup
+### Reporting
 
-### Finnhub (Free tier available)
-1. Sign up at [finnhub.io](https://finnhub.io)
-2. Get your API key from dashboard
-3. Add to `.env`: `FINNHUB_API_KEY=your_key`
+- `POST /api/report/generate` - Create PDF report
 
-### Alpha Vantage (Free tier available)
-1. Sign up at [alphavantage.co](https://www.alphavantages.co)
-2. Get your API key
-3. Add to `.env`: `ALPHA_VANTAGE_API_KEY=your_key`
+- `GET /api/report/{id}/download` - Download generated report
 
-### Yahoo Finance
-- No API key required (free access)
 
----
 
-## 🛠️ Development
+## Performance Metrics
+
+
+
+The system calculates comprehensive trading performance metrics:
+
+
+
+- **Profitability**: Net P&L, Gross Profit/Loss, Profit Factor
+
+- **Risk Metrics**: Max Drawdown, Sharpe Ratio, Sortino Ratio
+
+- **Trade Statistics**: Win Rate, Average Trade P&L, Total Trades
+
+- **Timing**: Average Trade Duration, Best/Worst Trade
+
+- **Portfolio**: Initial/Final Balance, Total Return %
+
+
+
+## Configuration
+
+
+
+### Environment Variables
+
+```bash
+
+# API Keys
+
+GEMINI_API_KEY=your_gemini_api_key
+
+FINNHUB_API_KEY=your_finnhub_api_key
+
+ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key
+
+
+
+# Application Settings
+
+FLASK_ENV=development
+
+STREAMLIT_SERVER_PORT=8501
+
+```
+
+
+
+### Strategy Parameters
+
+Each strategy supports customizable parameters:
+
+- **SMA Crossover**: Short/Long period windows
+
+- **RSI**: Overbought/Oversold levels, period
+
+- **Bollinger Bands**: Standard deviation multiplier, period
+
+- **MACD**: Fast/Slow/Signal periods
+
+- **Multi-Indicator**: Combined strategy weights
+
+
+
+## Development
+
+
+
+### Project Structure
+
+- `app/services/` - Business logic and data processing
+
+- `app/routes/` - API endpoint definitions
+
+- `app/strategies/` - Trading strategy implementations
+
+- `tests/` - Unit and integration tests
+
+
 
 ### Adding New Strategies
-1. Create `app/strategies/strategy6.py`
-2. Implement strategy function following existing patterns
-3. Add route in `strategy_routes.py`
-4. Update Streamlit UI
 
-### Customizing Metrics
-Edit `backtest_service.py` to add new performance metrics.
+1. Create strategy file in `app/strategies/`
 
-### Data Sources
-Extend `data_service.py` to add new market data providers.
+2. Implement strategy logic following existing patterns
 
----
+3. Add API endpoint in `app/routes/strategies.py`
 
-## 📊 Sample Results
+4. Update frontend strategy selection
+
+
+
+### Testing
+
+```bash
+
+# Run all tests
+
+python -m pytest tests/
+
+
+
+# Run specific test
+
+python -m pytest tests/test_data_service.py
 
 ```
-Strategy: SMA Crossover (9/21)
-Symbol: AAPL
-Period: 2023-01-01 to 2024-01-01
 
-📈 Performance Metrics:
-• Net P&L: $12,450.67
-• Win Rate: 58.3%
-• Sharpe Ratio: 1.24
-• Max Drawdown: -$2,180.50
-• Total Trades: 127
-• Profit Factor: 1.67
 
-📊 Equity Curve: Available in PDF report
-```
 
----
+## Sample Results
 
-## 🤝 Contributing
+
+
+### Strategy Performance Comparison
+
+| Strategy | Win Rate | Profit Factor | Max Drawdown | Sharpe Ratio |
+
+|----------|----------|---------------|--------------|--------------|
+
+| SMA Crossover | 65.2% | 1.45 | 12.3% | 1.23 |
+
+| RSI Mean Reversion | 58.7% | 1.28 | 15.1% | 0.98 |
+
+| Bollinger Bands | 62.1% | 1.52 | 10.8% | 1.45 |
+
+| MACD Crossover | 59.3% | 1.35 | 13.7% | 1.12 |
+
+| Multi-Indicator | 67.8% | 1.68 | 9.2% | 1.67 |
+
+
+
+### Market Performance (RELIANCE.NS, 2024)
+
+- **Total Return**: +24.7%
+
+- **Annualized Return**: +31.2%
+
+- **Max Drawdown**: -8.4%
+
+- **Sharpe Ratio**: 1.89
+
+- **Total Trades**: 156
+
+- **Win Rate**: 68.5%
+
+
+
+## Contributing
+
+
 
 1. Fork the repository
+
+2. Create a feature branch (`git checkout -b feature/new-strategy`)
+
+3. Commit changes (`git commit -am 'Add new strategy'`)
+
+4. Push to branch (`git push origin feature/new-strategy`)
+
+5. Create Pull Request
+
+
+
+### Development Guidelines
+
+- Follow PEP 8 style guidelines
+
+- Add unit tests for new features
+
+- Update documentation for API changes
+
+- Ensure Docker compatibility
+
+
+
+---
+
+
+
+**Built with ❤️ for quantitative traders and algorithmic strategists**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+│   │   ├── strategy_routes.py # Strategy execution
+│   │
+│   ├── templates/           # HTML templates
+│   │   ├── raw/            # Raw API data
+│   │   └── trade_history/  # Trade logs
+│
+├── run_enhanced.py          # Enhanced app runner
+└── README.md
+
+
+
+```bash
+git clone <repository-url>
+
+docker-compose up --build
+# Or run individual services
+docker-compose up trading-ui          # Streamlit UI only
+
+```bash
+
+python app.py flask
+# Run Streamlit UI (in another terminal)
+
+python app.py both
+
+- **Flask Backend API:** http://localhost:5000
+
+
+
+   - Enter symbol (e.g., `RELIANCE.NS`, `EURUSD=X`, `AAPL`)
+   - Set date range and initial balance
+2. **Gather Data:**
+   - Data is automatically saved to `/data/raw/` and `/data/processed/`
+3. **Run Strategies:**
+   - View real-time metrics and equity curves
+4. **Generate Reports:**
+   - Download professional strategy reports
+---
+## 🔧 API Endpoints
+### Data Management
+- `GET /api/data/status` - Check data availability
+
+- `POST /api/strategy/run/{id}` - Run specific strategy
+- `GET /api/strategy/list` - List available strategies
+### Report Generation
+- `POST /api/report/compare` - Generate comparison report
+
+
+
+- **Gross Profit/Loss** - Total winning/losing amounts
+- **Profit Factor** - Gross profit divided by gross loss
+- **Sortino Ratio** - Downside risk-adjusted return
+- **Average Trade P&L** - Mean profit per trade
+- **Trade History** - Detailed trade log with timestamps
+---
+## 🔑 API Keys Setup
+### Finnhub (Free tier available)
+2. Get your API key from dashboard
+
+1. Sign up at [alphavantage.co](https://www.alphavantages.co)
+3. Add to `.env`: `ALPHA_VANTAGE_API_KEY=your_key`
+### Yahoo Finance
+
+
+
+1. Create `app/strategies/strategy6.py`
+3. Add route in `strategy_routes.py`
+
+Edit `backtest_service.py` to add new performance metrics.
+### Data Sources
+
+
+
+Strategy: SMA Crossover (9/21)
+Period: 2023-01-01 to 2024-01-01
+📈 Performance Metrics:
+• Win Rate: 58.3%
+• Max Drawdown: -$2,180.50
+• Profit Factor: 1.67
+📊 Equity Curve: Available in PDF report
+
+
+
 2. Create a feature branch
-3. Add tests for new strategies
 4. Submit a pull request
-
 ---
-
 ## 📄 License
-
 MIT License - see LICENSE file for details.
-
 ---
-
 ## 🙏 Acknowledgments
-
 - **Yahoo Finance** - Primary data source
-- **Finnhub** - Alternative market data
 - **Alpha Vantage** - Additional data provider
-- **Streamlit** - Modern web UI framework
 - **Plotly** - Interactive charting
-- **ReportLab** - PDF generation
