@@ -1,0 +1,30 @@
+services:
+  trading-backtester:
+    build: .
+    ports:
+      - "3000:3000"   # Flask API
+    environment:
+      - FLASK_ENV=production
+      - FINNHUB_API_KEY=${FINNHUB_API_KEY:-}
+      - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY:-}
+    volumes:
+      - ./app/data:/app/app/data
+      - ./app/reports:/app/app/reports
+    restart: unless-stopped
+    command: ["python", "app.py", "flask"]
+
+  trading-ui:
+    build: .
+    ports:
+      - "8501:8501"   # Streamlit UI
+    environment:
+      - DOCKER_ENV=true
+      - FINNHUB_API_KEY=${FINNHUB_API_KEY:-}
+      - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY:-}
+    volumes:
+      - ./app/data:/app/app/data
+      - ./app/reports:/app/app/reports
+    restart: unless-stopped
+    command: ["python", "app.py", "streamlit"]
+    depends_on:
+      - trading-backtester

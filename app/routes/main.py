@@ -20,4 +20,20 @@ def index():
 
         return render_template("results.html", stock=stock, results=results)
 
-    return render_template("index.html")
+    # Backend page info
+    backend_info = {
+        "title": "Trading Strategy Backtester - Backend API",
+        "version": "1.0.0",
+        "description": "RESTful API for trading strategy backtesting",
+        "endpoints": {
+            "main": "/",
+            "data": "/api/data/*",
+            "strategy": "/api/strategy/*",
+            "report": "/api/report/*",
+            "strategies": "/strategies/*"
+        },
+        "status": "running",
+        "port": 3000
+    }
+
+    return render_template("index.html", backend_info=backend_info)
