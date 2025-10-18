@@ -17,57 +17,203 @@
 </div>
 {% endif %}
 
-<h2>Backtest Your Strategy</h2>
-<form method="POST">
-    <div class="mb-3">
-        <label>Stock Symbol:</label>
-        <select name="stock" class="form-control" required>
-            <option value="RELIANCE.NS">RELIANCE.NS</option>
-            <option value="TCS.NS">TCS.NS</option>
-            <option value="INFY.NS">INFY.NS</option>
-            <option value="HDFCBANK.NS">HDFCBANK.NS</option>
-            <option value="ICICIBANK.NS">ICICIBANK.NS</option>
-            <option value="SBIN.NS">SBIN.NS</option>
-            <option value="KOTAKBANK.NS">KOTAKBANK.NS</option>
-            <option value="LT.NS">LT.NS</option>
-            <option value="ITC.NS">ITC.NS</option>
-            <option value="AXISBANK.NS">AXISBANK.NS</option>
-            <option value="BAJFINANCE.NS">BAJFINANCE.NS</option>
-            <option value="HCLTECH.NS">HCLTECH.NS</option>
-            <option value="WIPRO.NS">WIPRO.NS</option>
-            <option value="SUNPHARMA.NS">SUNPHARMA.NS</option>
-            <option value="ULTRACEMCO.NS">ULTRACEMCO.NS</option>
-            <option value="TITAN.NS">TITAN.NS</option>
-            <option value="MARUTI.NS">MARUTI.NS</option>
-            <option value="NESTLEIND.NS">NESTLEIND.NS</option>
-            <option value="POWERGRID.NS">POWERGRID.NS</option>
-            <option value="ONGC.NS">ONGC.NS</option>
-            <option value="AAPL">AAPL</option>
-            <option value="MSFT">MSFT</option>
-            <option value="GOOGL">GOOGL</option>
-            <!-- Add more as needed -->
-        </select>
+<!-- Professional Chart Access Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-chart-line text-primary me-2"></i>
+                    Professional Trading Charts
+                </h5>
+                <p class="card-text text-muted">
+                    Access professional-grade candlestick charts with advanced features like the ones used in ForexSoftware.com
+                </p>
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <a href="/candle-view?symbol=EURUSD&timeframe=1d&market_type=Forex" 
+                           class="btn btn-outline-primary w-100">
+                            <i class="fas fa-chart-bar me-2"></i>EUR/USD Forex Chart
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="/candle-view?symbol=BTC&timeframe=1d&market_type=Crypto" 
+                           class="btn btn-outline-success w-100">
+                            <i class="fab fa-bitcoin me-2"></i>Bitcoin Chart
+                        </a>
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <a href="/candle-view?symbol=RELIANCE.NS&timeframe=1d&market_type=Indian%20Stocks" 
+                           class="btn btn-outline-info w-100">
+                            <i class="fas fa-rupee-sign me-2"></i>Reliance Stock Chart
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label>Strategy:</label>
-        <select name="strategy" class="form-control" required>
-            <option value="Buy when RSI < 30, Sell when RSI > 70">RSI (Buy when RSI < 30, Sell when RSI > 70)</option>
-            <option value="orb">ORB (Opening Range Breakout)</option>
-            <option value="ema_crossover">EMA Crossover (Predefined)</option>
-        </select>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0">
+                    <i class="fas fa-cogs text-primary me-2"></i>
+                    Backtest Your Strategy
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Stock Symbol:</label>
+                        <select name="stock" class="form-select" required>
+                            <optgroup label="🇮🇳 Indian Stocks (NSE)">
+                                <option value="RELIANCE.NS">RELIANCE.NS</option>
+                                <option value="TCS.NS">TCS.NS</option>
+                                <option value="INFY.NS">INFY.NS</option>
+                                <option value="HDFCBANK.NS">HDFCBANK.NS</option>
+                                <option value="ICICIBANK.NS">ICICIBANK.NS</option>
+                                <option value="SBIN.NS">SBIN.NS</option>
+                                <option value="KOTAKBANK.NS">KOTAKBANK.NS</option>
+                                <option value="LT.NS">LT.NS</option>
+                                <option value="ITC.NS">ITC.NS</option>
+                                <option value="AXISBANK.NS">AXISBANK.NS</option>
+                                <option value="BAJFINANCE.NS">BAJFINANCE.NS</option>
+                                <option value="HCLTECH.NS">HCLTECH.NS</option>
+                                <option value="WIPRO.NS">WIPRO.NS</option>
+                                <option value="SUNPHARMA.NS">SUNPHARMA.NS</option>
+                                <option value="ULTRACEMCO.NS">ULTRACEMCO.NS</option>
+                                <option value="TITAN.NS">TITAN.NS</option>
+                                <option value="MARUTI.NS">MARUTI.NS</option>
+                                <option value="NESTLEIND.NS">NESTLEIND.NS</option>
+                                <option value="POWERGRID.NS">POWERGRID.NS</option>
+                                <option value="ONGC.NS">ONGC.NS</option>
+                            </optgroup>
+                            <optgroup label="🇺🇸 US Stocks">
+                                <option value="AAPL">AAPL (Apple)</option>
+                                <option value="MSFT">MSFT (Microsoft)</option>
+                                <option value="GOOGL">GOOGL (Google)</option>
+                                <option value="AMZN">AMZN (Amazon)</option>
+                                <option value="TSLA">TSLA (Tesla)</option>
+                                <option value="META">META (Meta)</option>
+                                <option value="NVDA">NVDA (Nvidia)</option>
+                            </optgroup>
+                            <optgroup label="💱 Forex Pairs">
+                                <option value="EURUSD=X">EUR/USD</option>
+                                <option value="GBPUSD=X">GBP/USD</option>
+                                <option value="USDJPY=X">USD/JPY</option>
+                                <option value="AUDUSD=X">AUD/USD</option>
+                            </optgroup>
+                            <optgroup label="₿ Cryptocurrencies">
+                                <option value="BTC-USD">Bitcoin</option>
+                                <option value="ETH-USD">Ethereum</option>
+                                <option value="ADA-USD">Cardano</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Strategy:</label>
+                        <select name="strategy" class="form-select" required>
+                            <option value="Buy when RSI < 30, Sell when RSI > 70">RSI Strategy (Buy when RSI < 30, Sell when RSI > 70)</option>
+                            <option value="orb">ORB (Opening Range Breakout)</option>
+                            <option value="ema_crossover">EMA Crossover (Predefined)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Duration:</label>
+                        <select name="duration" class="form-select">
+                            <option value="1Y">1 Year</option>
+                            <option value="2Y">2 Years</option>
+                            <option value="3Y">3 Years</option>
+                            <option value="5Y">5 Years</option>
+                            <option value="ALL">All Available Data</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                        <i class="fas fa-play me-2"></i>Start Backtesting
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label>Duration:</label>
-        <select name="duration" class="form-control">
-            <option value="1Y">1 Year</option>
-            <option value="2Y">2 Years</option>
-            <option value="3Y">3 Years</option>
-            <option value="5Y">5 Years</option>
-            <option value="ALL">All</option>
-        </select>
+    
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0">
+                    <i class="fas fa-info-circle text-info me-2"></i>
+                    Features
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Professional Candlestick Charts
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Multi-Market Support
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Advanced Data Sources
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Real-time Quality Validation
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Technical Indicators
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success me-2"></i>
+                        Export & Analysis Tools
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card border-0 shadow-sm mt-3">
+            <div class="card-header bg-white border-bottom">
+                <h6 class="mb-0">
+                    <i class="fas fa-chart-area text-warning me-2"></i>
+                    Market Coverage
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-2">
+                        <div class="border rounded p-2">
+                            <strong>48+</strong><br>
+                            <small>Crypto Symbols</small>
+                        </div>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <div class="border rounded p-2">
+                            <strong>42+</strong><br>
+                            <small>Forex Pairs</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-2">
+                            <strong>200+</strong><br>
+                            <small>US Stocks</small>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="border rounded p-2">
+                            <strong>100+</strong><br>
+                            <small>Indian Stocks</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary">Backtest</button>
-</form>
+</div>
 {% if error %}
 <div class="alert alert-danger mt-3">{{ error }}</div>
 {% endif %}

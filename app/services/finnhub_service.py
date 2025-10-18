@@ -5,11 +5,15 @@ import requests
 import pandas as pd
 from datetime import datetime, timedelta
 
+
 def get_finnhub_api_key():
     api_key = os.getenv("FINNHUB_API_KEY")
     if not api_key:
-        raise ValueError("[ERROR] FINNHUB_API_KEY not set in environment. Please set it in your .env file.")
+        raise ValueError(
+            "[ERROR] FINNHUB_API_KEY not set in environment. Please set it in your .env file."
+        )
     return api_key
+
 
 def get_stock_data(symbol, duration):
     now = datetime.now()
@@ -32,18 +36,22 @@ def get_stock_data(symbol, duration):
         response.raise_for_status()
         r = response.json()
         if r.get("s") != "ok":
-            print(f"[ERROR] Finnhub API returned status: {r.get('s', 'unknown')}. Response: {r}")
+            print(
+                f"[ERROR] Finnhub API returned status: {r.get('s', 'unknown')}. Response: {r}"
+            )
             # Print the full response for debugging
             print(f"[DEBUG] Full Finnhub response: {r}")
             return pd.DataFrame()
-        df = pd.DataFrame({
-            "t": pd.to_datetime(r["t"], unit="s"),
-            "o": r["o"],
-            "h": r["h"],
-            "l": r["l"],
-            "c": r["c"],
-            "v": r["v"]
-        })
+        df = pd.DataFrame(
+            {
+                "t": pd.to_datetime(r["t"], unit="s"),
+                "o": r["o"],
+                "h": r["h"],
+                "l": r["l"],
+                "c": r["c"],
+                "v": r["v"],
+            }
+        )
         df.set_index("t", inplace=True)
         return df
     except requests.exceptions.RequestException as e:

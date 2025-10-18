@@ -5,6 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def compute_rsi(data, window=14):
     """Calculate RSI indicator"""
     delta = data.diff()
@@ -18,7 +19,10 @@ def compute_rsi(data, window=14):
     rsi = 100 - (100 / (1 + rs))
     return rsi
 
-def strategy_2_rsi_divergence(df, rsi_period=14, overbought=70, oversold=30, initial_balance=100000):
+
+def strategy_2_rsi_divergence(
+    df, rsi_period=14, overbought=70, oversold=30, initial_balance=100000
+):
     """
     Strategy 2: RSI Mean Reversion Strategy
 
@@ -35,12 +39,14 @@ def strategy_2_rsi_divergence(df, rsi_period=14, overbought=70, oversold=30, ini
     Returns:
         dict: Strategy results with trades and metrics
     """
-    logger.info(f"Running RSI Strategy (Period: {rsi_period}, Overbought: {overbought}, Oversold: {oversold})")
+    logger.info(
+        f"Running RSI Strategy (Period: {rsi_period}, Overbought: {overbought}, Oversold: {oversold})"
+    )
 
     df = df.copy()
 
     # Calculate RSI
-    df['rsi'] = compute_rsi(df['c'], window=rsi_period)
+    df["rsi"] = compute_rsi(df["c"], window=rsi_period)
 
     # Initialize variables
     position = None  # None, 'BUY', or 'SELL'
@@ -51,51 +57,59 @@ def strategy_2_rsi_divergence(df, rsi_period=14, overbought=70, oversold=30, ini
 
     # Iterate through data (skip initial RSI calculation period)
     for i in range(rsi_period, len(df)):
-        current_time = df.iloc[i]['timestamp'] if 'timestamp' in df.columns else i
-        current_price = df.iloc[i]['c']
-        current_rsi = df.iloc[i]['rsi']
+        current_time = df.iloc[i]["timestamp"] if "timestamp" in df.columns else i
+        current_price = df.iloc[i]["c"]
+        current_rsi = df.iloc[i]["rsi"]
 
         # Check for buy signal (RSI below oversold)
         if position is None and current_rsi < oversold:
-            position = 'BUY'
+            position = "BUY"
             entry_price = current_price
             entry_time = current_time
-            logger.debug(f"BUY signal at {current_time}: RSI={current_rsi:.2f}, Price={current_price}")
+            logger.debug(
+                f"BUY signal at {current_time}: RSI={current_rsi:.2f}, Price={current_price}"
+            )
 
         # Check for sell signal (RSI above overbought)
-        elif position == 'BUY' and current_rsi > overbought:
+        elif position == "BUY" and current_rsi > overbought:
             exit_price = current_price
             exit_time = current_time
             pnl = exit_price - entry_price
 
             # Calculate trade duration
-            if isinstance(entry_time, (int, float)) and isinstance(exit_time, (int, float)):
+            if isinstance(entry_time, (int, float)) and isinstance(
+                exit_time, (int, float)
+            ):
                 duration = exit_time - entry_time
             else:
                 duration = 1  # Default duration if timestamps are not numeric
 
             trade = {
-                'entry_time': str(entry_time),
-                'entry_price': float(entry_price),
-                'exit_time': str(exit_time),
-                'exit_price': float(exit_price),
-                'pnl': float(pnl),
-                'duration': duration,
-                'type': 'BUY',
-                'entry_rsi': float(df.iloc[i - duration if duration < i else 0]['rsi']),
-                'exit_rsi': float(current_rsi)
+                "entry_time": str(entry_time),
+                "entry_price": float(entry_price),
+                "exit_time": str(exit_time),
+                "exit_price": float(exit_price),
+                "pnl": float(pnl),
+                "duration": duration,
+                "type": "BUY",
+                "entry_rsi": float(df.iloc[i - duration if duration < i else 0]["rsi"]),
+                "exit_rsi": float(current_rsi),
             }
             trades.append(trade)
             trade_durations.append(duration)
 
             position = None
-            logger.debug(f"SELL signal at {exit_time}: RSI={current_rsi:.2f}, Price={exit_price}, P&L: {pnl}")
+            logger.debug(
+                f"SELL signal at {exit_time}: RSI={current_rsi:.2f}, Price={exit_price}, P&L: {pnl}"
+            )
 
     # Close any open position at the end
-    if position == 'BUY':
-        exit_price = df.iloc[-1]['c']
-        exit_time = df.iloc[-1]['timestamp'] if 'timestamp' in df.columns else len(df)-1
-        exit_rsi = df.iloc[-1]['rsi']
+    if position == "BUY":
+        exit_price = df.iloc[-1]["c"]
+        exit_time = (
+            df.iloc[-1]["timestamp"] if "timestamp" in df.columns else len(df) - 1
+        )
+        exit_rsi = df.iloc[-1]["rsi"]
         pnl = exit_price - entry_price
 
         if isinstance(entry_time, (int, float)) and isinstance(exit_time, (int, float)):
@@ -104,36 +118,38 @@ def strategy_2_rsi_divergence(df, rsi_period=14, overbought=70, oversold=30, ini
             duration = 1
 
         trade = {
-            'entry_time': str(entry_time),
-            'entry_price': float(entry_price),
-            'exit_time': str(exit_time),
-            'exit_price': float(exit_price),
-            'pnl': float(pnl),
-            'duration': duration,
-            'type': 'BUY',
-            'entry_rsi': float(df.iloc[max(0, len(df) - duration - 1)]['rsi']),
-            'exit_rsi': float(exit_rsi)
+            "entry_time": str(entry_time),
+            "entry_price": float(entry_price),
+            "exit_time": str(exit_time),
+            "exit_price": float(exit_price),
+            "pnl": float(pnl),
+            "duration": duration,
+            "type": "BUY",
+            "entry_rsi": float(df.iloc[max(0, len(df) - duration - 1)]["rsi"]),
+            "exit_rsi": float(exit_rsi),
         }
         trades.append(trade)
         trade_durations.append(duration)
 
-        logger.debug(f"Closed open position at end: RSI={exit_rsi:.2f}, Price={exit_price}, P&L: {pnl}")
+        logger.debug(
+            f"Closed open position at end: RSI={exit_rsi:.2f}, Price={exit_price}, P&L: {pnl}"
+        )
 
     # Prepare results
-    pnl_values = [trade['pnl'] for trade in trades]
+    pnl_values = [trade["pnl"] for trade in trades]
 
     result = {
-        'trades': trades,
-        'trade_durations': trade_durations,
-        'total_trades': len(trades),
-        'winning_trades': len([t for t in trades if t['pnl'] > 0]),
-        'losing_trades': len([t for t in trades if t['pnl'] <= 0]),
-        'parameters': {
-            'rsi_period': rsi_period,
-            'overbought': overbought,
-            'oversold': oversold,
-            'strategy_type': 'RSI Mean Reversion'
-        }
+        "trades": trades,
+        "trade_durations": trade_durations,
+        "total_trades": len(trades),
+        "winning_trades": len([t for t in trades if t["pnl"] > 0]),
+        "losing_trades": len([t for t in trades if t["pnl"] <= 0]),
+        "parameters": {
+            "rsi_period": rsi_period,
+            "overbought": overbought,
+            "oversold": oversold,
+            "strategy_type": "RSI Mean Reversion",
+        },
     }
 
     logger.info(f"RSI strategy completed: {len(trades)} trades")
