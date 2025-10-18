@@ -74,6 +74,15 @@ def make_api_call(endpoint, method="GET", data=None):
         st.error("Invalid response from server")
         return None
 
+def get_currency_symbol(market_type):
+    """Get currency symbol based on market type"""
+    if market_type in ["US Stocks", "Forex", "CRYPTO"]:
+        return "$"  # USD for US stocks, Forex, and Crypto
+    elif market_type == "Indian Stocks":
+        return "₹"  # INR for Indian stocks
+    else:
+        return "$"  # Default to USD
+
 def main():
     st.markdown('<div class="main-header">⚡ Trading Strategy Backtester</div>', unsafe_allow_html=True)
     
@@ -251,8 +260,9 @@ def main():
         )
 
     # Initial balance
+    currency_symbol = get_currency_symbol(market_type)
     initial_balance = st.sidebar.number_input(
-        "Initial Balance ($)",
+        f"Initial Balance ({currency_symbol})",
         value=100000,
         min_value=1000,
         step=1000,
@@ -371,7 +381,8 @@ def main():
                     with col2:
                         if '💰 Close' in df_display.columns:
                             latest_price = df_display['💰 Close'].iloc[-1] if len(df_display) > 0 else 0
-                            st.metric("💰 Latest Price", f"${latest_price}")
+                            currency_symbol = get_currency_symbol(market_type)
+                            st.metric("💰 Latest Price", f"{currency_symbol}{latest_price}")
                     
                     with col3:
                         if '📅 Date' in df_display.columns:
@@ -383,15 +394,16 @@ def main():
                     
                     # Display the data table
                     st.markdown(f"**Showing last {len(df_display)} of {total_records} records for {symbol}**")
+                    currency_symbol = get_currency_symbol(market_type)
                     st.dataframe(
                         df_display, 
                         use_container_width=True,
                         height=400,
                         column_config={
-                            "💹 Open": st.column_config.NumberColumn("💹 Open", format="$%.2f"),
-                            "📈 High": st.column_config.NumberColumn("📈 High", format="$%.2f"),
-                            "📉 Low": st.column_config.NumberColumn("📉 Low", format="$%.2f"),
-                            "💰 Close": st.column_config.NumberColumn("💰 Close", format="$%.2f"),
+                            "💹 Open": st.column_config.NumberColumn("💹 Open", format=f"{currency_symbol}%.2f"),
+                            "📈 High": st.column_config.NumberColumn("📈 High", format=f"{currency_symbol}%.2f"),
+                            "📉 Low": st.column_config.NumberColumn("📉 Low", format=f"{currency_symbol}%.2f"),
+                            "💰 Close": st.column_config.NumberColumn("💰 Close", format=f"{currency_symbol}%.2f"),
                             "📊 Volume": st.column_config.TextColumn("📊 Volume"),
                             "📅 Date": st.column_config.DateColumn("📅 Date")
                         }
@@ -514,7 +526,8 @@ def main():
             col1, col2, col3, col4 = st.columns(4)
 
             with col1:
-                st.metric("Net P&L", f"${results.get('net_profit_loss', 0):,.2f}")
+                currency_symbol = get_currency_symbol(market_type)
+                st.metric("Net P&L", f"{currency_symbol}{results.get('net_profit_loss', 0):,.2f}")
             with col2:
                 st.metric("Win Rate", f"{results.get('win_rate', 0):.1f}%")
             with col3:
@@ -526,13 +539,16 @@ def main():
             col1, col2, col3, col4 = st.columns(4)
 
             with col1:
-                st.metric("Max Drawdown", f"${results.get('max_drawdown', 0):,.2f}")
+                currency_symbol = get_currency_symbol(market_type)
+                st.metric("Max Drawdown", f"{currency_symbol}{results.get('max_drawdown', 0):,.2f}")
             with col2:
                 st.metric("Profit Factor", f"{results.get('profit_factor', 0):.2f}")
             with col3:
-                st.metric("Avg Trade P&L", f"${results.get('average_trade_pnl', 0):,.2f}")
+                currency_symbol = get_currency_symbol(market_type)
+                st.metric("Avg Trade P&L", f"{currency_symbol}{results.get('average_trade_pnl', 0):,.2f}")
             with col4:
-                st.metric("Final Balance", f"${results.get('final_balance', 0):,.2f}")
+                currency_symbol = get_currency_symbol(market_type)
+                st.metric("Final Balance", f"{currency_symbol}{results.get('final_balance', 0):,.2f}")
 
             # Equity curve placeholder
             st.subheader("Equity Curve")
@@ -557,7 +573,7 @@ def main():
                 best_strategy = comparison.get("best_strategy", "N/A")
                 best_pnl = comparison.get("best_net_profit", 0)
 
-                st.success(f"🏆 Best Performing Strategy: {best_strategy} (${best_pnl:,.2f} P&L)")
+                st.success(f"🏆 Best Performing Strategy: {best_strategy} ({get_currency_symbol(market_type)}{best_pnl:,.2f} P&L)")
 
                 # Comparison table
                 comp_data = {
@@ -634,9 +650,10 @@ def main():
             with col1:
                 net_profit = results.get("net_profit_loss", 0)
                 profit_pct = (net_profit / initial_balance) * 100 if initial_balance > 0 else 0
+                currency_symbol = get_currency_symbol(market_type)
                 st.metric(
                     "💰 Net P&L", 
-                    f"${net_profit:.2f}", 
+                    f"{currency_symbol}{net_profit:.2f}", 
                     delta=f"{profit_pct:.2f}%",
                     delta_color="normal" if net_profit >= 0 else "inverse"
                 )
@@ -651,7 +668,8 @@ def main():
             
             with col4:
                 avg_trade = results.get("average_trade_pnl", 0)
-                st.metric("📈 Avg Trade", f"${avg_trade:.2f}")
+                currency_symbol = get_currency_symbol(market_type)
+                st.metric("📈 Avg Trade", f"{currency_symbol}{avg_trade:.2f}")
             
             # Enhanced Performance Charts
             st.subheader("📊 Performance Analysis")
@@ -694,7 +712,7 @@ def main():
                             name='Portfolio Value',
                             line=dict(color='#0068c9', width=3),
                             marker=dict(size=6, color='#0068c9'),
-                            hovertemplate='<b>Trade:</b> %{x}<br><b>Equity:</b> $%{y:,.2f}<extra></extra>'
+                            hovertemplate=f'<b>Trade:</b> %{{x}}<br><b>Equity:</b> {get_currency_symbol(market_type)}%{{y:,.2f}}<extra></extra>'
                         ),
                         row=1, col=1
                     )
@@ -735,7 +753,7 @@ def main():
                     )
                     
                     fig.update_xaxes(title_text="Trade Number", row=2, col=1)
-                    fig.update_yaxes(title_text="Portfolio Value ($)", row=1, col=1)
+                    fig.update_yaxes(title_text=f"Portfolio Value ({get_currency_symbol(market_type)})", row=1, col=1)
                     fig.update_yaxes(title_text="Returns (%)", row=2, col=1)
                     
                     st.plotly_chart(fig, use_container_width=True)
@@ -744,16 +762,16 @@ def main():
                     col1, col2, col3, col4 = st.columns(4)
                     with col1:
                         max_value = max(equity_curve)
-                        st.metric("� Peak Value", f"${max_value:,.2f}")
+                        st.metric("� Peak Value", f"{currency_symbol}{max_value:,.2f}")
                     with col2:
                         min_value = min(equity_curve)
-                        st.metric("📉 Lowest Value", f"${min_value:,.2f}")
+                        st.metric("📉 Lowest Value", f"{currency_symbol}{min_value:,.2f}")
                     with col3:
                         total_return_pct = ((equity_curve[-1] - initial_balance) / initial_balance) * 100
                         st.metric("�📊 Total Return", f"{total_return_pct:.2f}%")
                     with col4:
                         max_drawdown = max(equity_curve) - min(equity_curve)
-                        st.metric("⚠️ Max Drawdown", f"${max_drawdown:,.2f}")
+                        st.metric("⚠️ Max Drawdown", f"{currency_symbol}{max_drawdown:,.2f}")
                 else:
                     st.warning("⚠️ No equity curve data available")
             
@@ -786,7 +804,7 @@ def main():
                             color='win_loss',
                             color_discrete_map={'Win': 'green', 'Loss': 'red', 'Breakeven': 'gray'},
                             title="Trade P&L by Trade Number",
-                            labels={'profit_loss': 'Profit/Loss ($)', 'trade_number': 'Trade #'}
+                            labels={'profit_loss': f'Profit/Loss ({currency_symbol})', 'trade_number': 'Trade #'}
                         )
                         fig_pnl.update_layout(height=400)
                         st.plotly_chart(fig_pnl, use_container_width=True)
@@ -806,7 +824,7 @@ def main():
                         fig_cum.update_layout(
                             title="Cumulative P&L Over Time",
                             xaxis_title="Trade Number",
-                            yaxis_title="Cumulative P&L ($)",
+                            yaxis_title=f"Cumulative P&L ({currency_symbol})",
                             height=400
                         )
                         st.plotly_chart(fig_cum, use_container_width=True)
@@ -826,11 +844,13 @@ def main():
                     
                     with col3:
                         largest_win = trades_df['profit_loss'].max()
-                        st.metric("🎯 Largest Win", f"${largest_win:.2f}")
+                        currency_symbol = get_currency_symbol(market_type)
+                        st.metric("🎯 Largest Win", f"{currency_symbol}{largest_win:.2f}")
                     
                     with col4:
                         largest_loss = trades_df['profit_loss'].min()
-                        st.metric("⚠️ Largest Loss", f"${largest_loss:.2f}")
+                        currency_symbol = get_currency_symbol(market_type)
+                        st.metric("⚠️ Largest Loss", f"{currency_symbol}{largest_loss:.2f}")
                 else:
                     st.warning("⚠️ No trade data available")
             
@@ -862,13 +882,14 @@ def main():
                     display_df = display_df.rename(columns={k: v for k, v in column_mapping.items() if k in display_df.columns})
                     
                     # Format numeric columns
+                    currency_symbol = get_currency_symbol(market_type)
                     if '💹 Entry Price' in display_df.columns:
-                        display_df['💹 Entry Price'] = display_df['💹 Entry Price'].apply(lambda x: f"${float(x):.4f}")
+                        display_df['💹 Entry Price'] = display_df['💹 Entry Price'].apply(lambda x: f"{currency_symbol}{float(x):.4f}")
                     if '💰 Exit Price' in display_df.columns:
-                        display_df['💰 Exit Price'] = display_df['💰 Exit Price'].apply(lambda x: f"${float(x):.4f}")
+                        display_df['💰 Exit Price'] = display_df['💰 Exit Price'].apply(lambda x: f"{currency_symbol}{float(x):.4f}")
                     if '💵 P&L' in display_df.columns:
-                        display_df['💵 P&L'] = display_df['💵 P&L'].apply(lambda x: f"${float(x):.2f}")
-                        display_df['📊 Result'] = display_df['💵 P&L'].apply(lambda x: '🟢 Win' if float(x.replace('$', '')) > 0 else '🔴 Loss' if float(x.replace('$', '')) < 0 else '⚪ Breakeven')
+                        display_df['💵 P&L'] = display_df['💵 P&L'].apply(lambda x: f"{currency_symbol}{float(x):.2f}")
+                        display_df['📊 Result'] = display_df['💵 P&L'].apply(lambda x: '🟢 Win' if float(str(x).replace(currency_symbol, '')) > 0 else '🔴 Loss' if float(str(x).replace(currency_symbol, '')) < 0 else '⚪ Breakeven')
                     
                     # Add trade number
                     display_df.insert(0, '#️⃣ Trade', range(1, len(display_df) + 1))
@@ -876,7 +897,7 @@ def main():
                     # Display summary statistics
                     col1, col2, col3, col4 = st.columns(4)
                     
-                    pnl_values = [float(str(x).replace('$', '')) for x in trades_df.get('pnl', [])]
+                    pnl_values = [float(str(x).replace(currency_symbol, '')) for x in trades_df.get('pnl', [])]
                     
                     with col1:
                         st.metric("📊 Total Trades", len(trades_df))
@@ -885,10 +906,10 @@ def main():
                         st.metric("🎯 Win Rate", f"{winning_pct:.1f}%")
                     with col3:
                         avg_win = sum([x for x in pnl_values if x > 0]) / len([x for x in pnl_values if x > 0]) if [x for x in pnl_values if x > 0] else 0
-                        st.metric("📈 Avg Win", f"${avg_win:.2f}")
+                        st.metric("📈 Avg Win", f"{currency_symbol}{avg_win:.2f}")
                     with col4:
                         avg_loss = sum([x for x in pnl_values if x < 0]) / len([x for x in pnl_values if x < 0]) if [x for x in pnl_values if x < 0] else 0
-                        st.metric("📉 Avg Loss", f"${avg_loss:.2f}")
+                        st.metric("📉 Avg Loss", f"{currency_symbol}{avg_loss:.2f}")
                     
                     # Display trade table
                     st.markdown(f"**All {len(display_df)} Trades:**")
@@ -928,14 +949,14 @@ def main():
                 
                 with col1:
                     st.markdown("**📈 Profitability Metrics**")
-                    st.write(f"• **Net Profit/Loss:** ${results.get('net_profit_loss', 0):.2f}")
-                    st.write(f"• **Gross Profit:** ${results.get('gross_profit', 0):.2f}")
-                    st.write(f"• **Gross Loss:** ${results.get('gross_loss', 0):.2f}")
+                    st.write(f"• **Net Profit/Loss:** {currency_symbol}{results.get('net_profit_loss', 0):.2f}")
+                    st.write(f"• **Gross Profit:** {currency_symbol}{results.get('gross_profit', 0):.2f}")
+                    st.write(f"• **Gross Loss:** {currency_symbol}{results.get('gross_loss', 0):.2f}")
                     st.write(f"• **Profit Factor:** {results.get('profit_factor', 0):.2f}")
                     st.write(f"• **Total Return:** {((results.get('net_profit_loss', 0) / initial_balance) * 100):.2f}%")
                     
                     st.markdown("**⚠️ Risk Metrics**")
-                    st.write(f"• **Max Drawdown:** ${results.get('max_drawdown', 0):.2f}")
+                    st.write(f"• **Max Drawdown:** {currency_symbol}{results.get('max_drawdown', 0):.2f}")
                     st.write(f"• **Max Drawdown %:** {((results.get('max_drawdown', 0) / initial_balance) * 100):.2f}%")
                     st.write(f"• **Sharpe Ratio:** {results.get('sharpe_ratio', 0):.3f}")
                 
@@ -945,22 +966,22 @@ def main():
                     st.write(f"• **Winning Trades:** {results.get('winning_trades', 0)}")
                     st.write(f"• **Losing Trades:** {results.get('losing_trades', 0)}")
                     st.write(f"• **Win Rate:** {results.get('win_rate', 0):.1f}%")
-                    st.write(f"• **Average Trade P&L:** ${results.get('average_trade_pnl', 0):.2f}")
+                    st.write(f"• **Average Trade P&L:** {currency_symbol}{results.get('average_trade_pnl', 0):.2f}")
                     
                     st.markdown("**⏱️ Duration Metrics**")
                     st.write(f"• **Average Trade Duration:** {results.get('average_trade_duration', 0):.1f} periods")
-                    st.write(f"• **Largest Win:** ${results.get('largest_win', 0):.2f}")
-                    st.write(f"• **Largest Loss:** ${results.get('largest_loss', 0):.2f}")
+                    st.write(f"• **Largest Win:** {currency_symbol}{results.get('largest_win', 0):.2f}")
+                    st.write(f"• **Largest Loss:** {currency_symbol}{results.get('largest_loss', 0):.2f}")
                 
                 # Performance summary CSV download
                 summary_data = {
                     'Metric': ['Net P&L', 'Total Trades', 'Win Rate', 'Profit Factor', 'Max Drawdown', 'Sharpe Ratio', 'Total Return %'],
                     'Value': [
-                        f"${results.get('net_profit_loss', 0):.2f}",
+                        f"{currency_symbol}{results.get('net_profit_loss', 0):.2f}",
                         results.get('total_trades', 0),
                         f"{results.get('win_rate', 0):.1f}%",
                         f"{results.get('profit_factor', 0):.2f}",
-                        f"${results.get('max_drawdown', 0):.2f}",
+                        f"{currency_symbol}{results.get('max_drawdown', 0):.2f}",
                         f"{results.get('sharpe_ratio', 0):.3f}",
                         f"{((results.get('net_profit_loss', 0) / initial_balance) * 100):.2f}%"
                     ]
