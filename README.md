@@ -62,6 +62,36 @@ A comprehensive web application for backtesting trading strategies across multip
 
 
 
+## Screenshots## Screenshots
+
+
+
+### Application Dashboard### Application Dashboard
+
+![Trading Strategy Backtester Dashboard](assets/trades.png)
+
+*Main application interface showing strategy selection, market configuration, and data gathering controls.*
+
+### Performance Analytics### Performance Analytics
+
+![Performance Metrics](assets/performance.png)
+
+*Comprehensive performance metrics including Sharpe Ratio, Sortino Ratio, Max Drawdown, and equity curves.*
+
+### Trade History Analysis### Trade History Analysis
+
+![Trade History](assets/trade_history.png)
+
+*Detailed trade history with P&L analysis, win/loss ratios, and trade timing information.*
+
+### Docker Deployment### Docker Deployment
+
+![Docker Setup](assets/docker.png)
+
+*Docker containerization setup for easy deployment and scaling.*
+
+
+
 ## Architecture## Architecture
 
 
@@ -315,12 +345,9 @@ python -c "from app import create_app; app = create_app(); app.run(port=3000)"  
 ``````
 
 
+# Usage Workflow
 
-## Usage Workflow## Usage Workflow
-
-
-
-1. **Data Configuration**1. **Data Configuration**
+**1. **Data Configuration**
 
    - Select market type (Forex, Indian Stocks, US Stocks)   - Select market type (Forex, Indian Stocks, US Stocks)
 
