@@ -230,7 +230,7 @@ The system implements a sophisticated multi-layer data pipeline:The system imple
 
 # Clone repository# Clone repository
 
-git clone https://github.com/OMCHOKSI108/BACKTESTING-OF-TRADING-STRATEGY.gitgit clone https://github.com/OMCHOKSI108/BACKTESTING-OF-TRADING-STRATEGY.git
+git clone https://github.com/OMCHOKSI108/BACKTESTING-OF-TRADING-STRATEGY.git
 
 cd BACKTESTING-OF-TRADING-STRATEGYcd BACKTESTING-OF-TRADING-STRATEGY
 
