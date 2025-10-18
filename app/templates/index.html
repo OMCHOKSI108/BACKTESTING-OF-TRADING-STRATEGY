@@ -1,5 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
+{% if backend_info %}
+<div class="alert alert-info mt-3">
+    <h5>🔧 Backend API Information</h5>
+    <p><strong>Title:</strong> {{ backend_info.title }}</p>
+    <p><strong>Version:</strong> {{ backend_info.version }}</p>
+    <p><strong>Description:</strong> {{ backend_info.description }}</p>
+    <p><strong>Port:</strong> {{ backend_info.port }}</p>
+    <p><strong>Status:</strong> <span class="badge bg-success">{{ backend_info.status }}</span></p>
+    <h6>Available Endpoints:</h6>
+    <ul>
+        {% for endpoint_name, endpoint_path in backend_info.endpoints.items() %}
+        <li><code>{{ endpoint_path }}</code></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
 <h2>Backtest Your Strategy</h2>
 <form method="POST">
     <div class="mb-3">

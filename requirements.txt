@@ -4,4 +4,17 @@ python-dotenv
 matplotlib
 pandas
 plotly
-openai  # or google-generativeai if you're using Gemini's Python SDK
+numpy
+streamlit
+yfinance
+reportlab
+fpdf2
+openai
+google-generativeai
+finnhub-python
+alpha-vantage
+mplfinance
+scikit-learn
+ta-lib
+python-dateutil
+pytz
