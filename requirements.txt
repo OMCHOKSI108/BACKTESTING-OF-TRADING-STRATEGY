@@ -8,6 +8,7 @@ numpy
 streamlit
 yfinance
 reportlab
+aiohttp
 fpdf2
 openai
 google-generativeai
@@ -18,3 +19,7 @@ scikit-learn
 ta-lib
 python-dateutil
 pytz
+asyncio
+pytest
+black
+pytest-asyncio

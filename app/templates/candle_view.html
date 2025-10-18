@@ -1,0 +1,683 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container-fluid">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-0 text-primary">📈 {{ symbol }} - Professional Chart Analysis</h2>
+                            <p class="text-muted mb-0">
+                                <span class="badge bg-info me-2">{{ timeframe }}</span>
+                                <span class="badge bg-secondary me-2">{{ market_type }}</span>
+                                <span class="text-sm">{{ data_count if data_count is defined else 0 }} candles | Quality Score: {{ data_quality if data_quality is defined else 0 }}%</span>
+                            </p>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-primary me-2" onclick="toggleFullscreen()">
+                                <i class="fas fa-expand"></i> Fullscreen
+                            </button>
+                            <a href="/" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Price Info -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body py-3">
+                    <div class="row text-center">
+                        <div class="col-md-2">
+                            <h5 class="mb-1" id="current-price">{{ latest_candle.c if latest_candle is defined else 'N/A' }}</h5>
+                            <small class="text-muted">Current Price</small>
+                        </div>
+                        <div class="col-md-2">
+                            <h5 class="mb-1 text-success" id="daily-high">{{ latest_candle.h if latest_candle is defined else 'N/A' }}</h5>
+                            <small class="text-muted">High</small>
+                        </div>
+                        <div class="col-md-2">
+                            <h5 class="mb-1 text-danger" id="daily-low">{{ latest_candle.l if latest_candle is defined else 'N/A' }}</h5>
+                            <small class="text-muted">Low</small>
+                        </div>
+                        <div class="col-md-2">
+                            <h5 class="mb-1" id="opening-price">{{ latest_candle.o if latest_candle is defined else 'N/A' }}</h5>
+                            <small class="text-muted">Open</small>
+                        </div>
+                        <div class="col-md-2">
+                            <h5 class="mb-1" id="volume">{{ latest_candle.v | round(2) if latest_candle is defined and latest_candle.v else 'N/A' }}</h5>
+                            <small class="text-muted">Volume</small>
+                        </div>
+                        <div class="col-md-2">
+                            <h5 class="mb-1">
+                                <span class="badge bg-{{ 'success' if (price_change is defined and price_change >= 0) else 'danger' }}">
+                                    {{ '+' if (price_change is defined and price_change >= 0) else '' }}{{ price_change if price_change is defined else 0 }}%
+                                </span>
+                            </h5>
+                            <small class="text-muted">Change</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Professional Candlestick Chart -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-chart-bar text-primary me-2"></i>
+                            Professional Candlestick Chart
+                        </h5>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '1m' %}active{% endif %}" onclick="changeTimeframe('1m', this)">1m</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '5m' %}active{% endif %}" onclick="changeTimeframe('5m', this)">5m</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '15m' %}active{% endif %}" onclick="changeTimeframe('15m', this)">15m</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '1h' %}active{% endif %}" onclick="changeTimeframe('1h', this)">1h</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '1d' %}active{% endif %}" onclick="changeTimeframe('1d', this)">1D</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '1w' %}active{% endif %}" onclick="changeTimeframe('1w', this)">1W</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="professional-candlestick" style="height: 700px; width: 100%;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Controls & Indicators -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">📊 Technical Indicators</h6>
+                </div>
+                <div class="card-body">
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="show-volume" checked onchange="toggleVolume()">
+                        <label class="form-check-label" for="show-volume">Volume</label>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="show-ma" onchange="toggleMA()">
+                        <label class="form-check-label" for="show-ma">Moving Average (20)</label>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="show-bollinger" onchange="toggleBollinger()">
+                        <label class="form-check-label" for="show-bollinger">Bollinger Bands</label>
+                    </div>
+                    <div class="form-check form-switch mb-2">
+                        <input class="form-check-input" type="checkbox" id="show-support" onchange="toggleSupport()">
+                        <label class="form-check-label" for="show-support">Support/Resistance</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white">
+                    <h6 class="mb-0">⚙️ Chart Settings</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="chart-theme" class="form-label">Theme</label>
+                        <select class="form-select form-select-sm" id="chart-theme" onchange="changeTheme()">
+                            <option value="plotly_white" {% if chart_theme == 'plotly_white' %}selected{% endif %}>Professional White</option>
+                            <option value="plotly_dark" {% if chart_theme == 'plotly_dark' %}selected{% endif %}>Dark Mode</option>
+                            <option value="simple_white" {% if chart_theme == 'simple_white' %}selected{% endif %}>Simple</option>
+                            <option value="ggplot2" {% if chart_theme == 'ggplot2' %}selected{% endif %}>GGPlot2</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="candle-count" class="form-label">Candles to Show</label>
+                        <select class="form-select form-select-sm" id="candle-count" onchange="updateCandleCount()">
+                            <option value="50">Last 50</option>
+                            <option value="100" selected>Last 100</option>
+                            <option value="200">Last 200</option>
+                            <option value="500">Last 500</option>
+                            <option value="all">All Data</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary btn-sm w-100" onclick="exportChart()">
+                        <i class="fas fa-download me-2"></i>Export Chart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Libraries -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
+<script>
+// Chart data from backend
+const chartDataFull = {{ chart_data | default({}) | tojson | safe }};
+let chartData = chartDataFull;
+const symbol = "{{ symbol }}";
+const timeframe = "{{ timeframe }}";
+let currentTheme = "{{ chart_theme | default('plotly_white') }}";
+let currentCandleCount = 100;
+let showVolume = true;
+let showMA = false;
+let showBollinger = false;
+let showSupport = false;
+
+// Chart configuration for professional look
+const professionalConfig = {
+    responsive: true,
+    displayModeBar: true,
+    toImageButtonOptions: {
+        format: 'png',
+        filename: `${symbol}_${timeframe}_professional_chart`,
+        height: 1080,
+        width: 1920,
+        scale: 1
+    }
+};
+
+// Professional layout matching the forexsoftware.com style
+let professionalLayout = {
+    title: {
+        text: `${symbol} - Professional Trading Chart`,
+        font: { size: 16, family: 'Arial, sans-serif', color: '#2c3e50' },
+        x: 0.02,
+        xanchor: 'left'
+    },
+    
+    // Main price chart
+    xaxis: {
+        title: '',
+        showgrid: true,
+        gridcolor: '#e1e8ed',
+        gridwidth: 1,
+        zeroline: false,
+        showline: true,
+        linecolor: '#d1d9e0',
+        linewidth: 1,
+        tickfont: { size: 11, color: '#5a6c7d' },
+        rangeslider: { visible: false },
+        type: 'date'
+    },
+    
+    yaxis: {
+        title: '',
+        showgrid: true,
+        gridcolor: '#e1e8ed',
+        gridwidth: 1,
+        zeroline: false,
+        showline: true,
+        linecolor: '#d1d9e0',
+        linewidth: 1,
+        tickfont: { size: 11, color: '#5a6c7d' },
+        side: 'right',
+        fixedrange: false
+    },
+    
+    // Volume chart
+    yaxis2: {
+        title: 'Volume',
+        titlefont: { size: 12, color: '#5a6c7d' },
+        tickfont: { size: 10, color: '#5a6c7d' },
+        overlaying: 'y',
+        side: 'left',
+        domain: [0, 0.2],
+        showgrid: false
+    },
+    
+    plot_bgcolor: '#ffffff',
+    paper_bgcolor: '#ffffff',
+    
+    margin: {
+        l: 60,
+        r: 60,
+        t: 40,
+        b: 40
+    },
+    
+    showlegend: false,
+    
+    hovermode: 'x unified',
+    
+    // Professional annotations
+    annotations: [
+        {
+            text: `Data Source: Professional APIs | Quality Score: {{ data_quality }}%`,
+            showarrow: false,
+            xref: "paper", yref: "paper",
+            x: 0.98, y: 0.02,
+            xanchor: 'right', yanchor: 'bottom',
+            font: { size: 9, color: '#95a5a6' }
+        }
+    ]
+};
+
+// Custom templates
+const customTemplates = {
+    simple_white: {
+        layout: {
+            plot_bgcolor: '#ffffff',
+            paper_bgcolor: '#ffffff',
+            font: { color: '#333' }
+        }
+    },
+    ggplot2: {
+        layout: {
+            plot_bgcolor: '#ffffff',
+            paper_bgcolor: '#ffffff',
+            font: { family: 'Arial', color: '#333' },
+            xaxis: { gridcolor: '#cccccc' },
+            yaxis: { gridcolor: '#cccccc' }
+        }
+    }
+};
+
+// Helper functions
+function getSlicedData() {
+    const num = currentCandleCount === 'all' ? chartData.dates.length : Math.min(parseInt(currentCandleCount), chartData.dates.length);
+    const sliceEnd = chartData.dates.length;
+    const sliceStart = Math.max(0, sliceEnd - num);
+    return {
+        dates: chartData.dates.slice(sliceStart),
+        open: chartData.open.slice(sliceStart),
+        high: chartData.high.slice(sliceStart),
+        low: chartData.low.slice(sliceStart),
+        close: chartData.close.slice(sliceStart),
+        volume: chartData.volume ? chartData.volume.slice(sliceStart) : []
+    };
+}
+
+function calculateMA(data, period = 20) {
+    const sliced = getSlicedData();
+    const ma = sliced.close.map((_, i) => {
+        if (i < period - 1) return null;
+        const slice = sliced.close.slice(i - period + 1, i + 1);
+        return slice.reduce((sum, val) => sum + val, 0) / period;
+    });
+    return { x: sliced.dates, y: ma };
+}
+
+function calculateBollinger(data, period = 20, std = 2) {
+    const sliced = getSlicedData();
+    const ma = calculateMA(data, period).y;
+    const variance = ma.map((m, i) => {
+        if (i < period - 1) return 0;
+        const slice = sliced.close.slice(i - period + 1, i + 1);
+        const avg = m;
+        return slice.reduce((sum, val) => sum + Math.pow(val - avg, 2), 0) / period;
+    }).map(v => Math.sqrt(v));
+    const upper = ma.map((m, i) => m + std * variance[i]);
+    const lower = ma.map((m, i) => m - std * variance[i]);
+    const dates = sliced.dates;
+    return { dates, upper, lower, ma };
+}
+
+function calculateSupportResistance(data) {
+    const sliced = getSlicedData();
+    const recentLow = Math.min(...sliced.low.slice(-20));
+    const recentHigh = Math.max(...sliced.high.slice(-20));
+    const dates = sliced.dates;
+    return {
+        support: { x: [dates[0], dates[dates.length - 1]], y: [recentLow, recentLow] },
+        resistance: { x: [dates[0], dates[dates.length - 1]], y: [recentHigh, recentHigh] }
+    };
+}
+
+// Trace creators
+function createCandlestickTrace(data) {
+    return {
+        type: 'candlestick',
+        x: data.dates,
+        open: data.open,
+        high: data.high,
+        low: data.low,
+        close: data.close,
+        name: symbol,
+        
+        increasing: {
+            line: { color: '#00c851', width: 1 },
+            fillcolor: '#00c851'
+        },
+        decreasing: {
+            line: { color: '#ff4444', width: 1 },
+            fillcolor: '#ff4444'
+        },
+        
+        line: { width: 1 },
+        
+        hoverlabel: {
+            bgcolor: 'rgba(255,255,255,0.9)',
+            bordercolor: '#cccccc',
+            font: { size: 12, color: '#333333' }
+        }
+    };
+}
+
+function createVolumeTrace(data) {
+    const colors = data.close.map((close, i) => 
+        i === 0 ? '#95a5a6' : 
+        (close >= data.close[i-1] ? '#00c851' : '#ff4444')
+    );
+    
+    return {
+        type: 'bar',
+        x: data.dates,
+        y: data.volume,
+        name: 'Volume',
+        yaxis: 'y2',
+        marker: {
+            color: colors,
+            opacity: 0.6
+        },
+        hovertemplate: 'Volume: %{y}<extra></extra>'
+    };
+}
+
+function createMATrace(data) {
+    const ma = calculateMA(data);
+    return {
+        type: 'scatter',
+        mode: 'lines',
+        x: ma.x,
+        y: ma.y,
+        name: 'MA(20)',
+        line: { color: '#007bff', width: 2 },
+        showlegend: false
+    };
+}
+
+function createBollingerTraces(data) {
+    const bb = calculateBollinger(data);
+    return [
+        {
+            type: 'scatter',
+            mode: 'lines',
+            x: bb.dates,
+            y: bb.upper,
+            line: { color: 'rgba(0,123,255,0.2)', width: 1 },
+            showlegend: false,
+            name: 'BB Upper'
+        },
+        {
+            type: 'scatter',
+            mode: 'lines',
+            x: bb.dates,
+            y: bb.lower,
+            fill: 'tonexty',
+            fillcolor: 'rgba(0,123,255,0.05)',
+            line: { color: 'rgba(0,123,255,0.2)', width: 1 },
+            showlegend: false,
+            name: 'BB Lower'
+        }
+    ];
+}
+
+function createSupportResistanceTraces(data) {
+    const sr = calculateSupportResistance(data);
+    return [
+        {
+            type: 'scatter',
+            mode: 'lines',
+            x: sr.support.x,
+            y: sr.support.y,
+            line: { color: 'green', dash: 'dash', width: 1 },
+            showlegend: false,
+            name: 'Support'
+        },
+        {
+            type: 'scatter',
+            mode: 'lines',
+            x: sr.resistance.x,
+            y: sr.resistance.y,
+            line: { color: 'red', dash: 'dash', width: 1 },
+            showlegend: false,
+            name: 'Resistance'
+        }
+    ];
+}
+
+// Update chart function
+function updateChart() {
+    const sliced = getSlicedData();
+    if (!sliced.dates || sliced.dates.length === 0) {
+        document.getElementById('professional-candlestick').innerHTML = 
+            '<div class="alert alert-danger p-4">Error: No data available</div>';
+        return;
+    }
+
+    let traces = [createCandlestickTrace(sliced)];
+    
+    if (showVolume && sliced.volume.some(v => v > 0)) {
+        traces.push(createVolumeTrace(sliced));
+    }
+    
+    if (showMA) {
+        traces.push(createMATrace(chartDataFull));
+    }
+    
+    if (showBollinger) {
+        traces.push(...createBollingerTraces(chartDataFull));
+    }
+    
+    if (showSupport) {
+        traces.push(...createSupportResistanceTraces(chartDataFull));
+    }
+    
+    // Apply theme
+    professionalLayout.template = customTemplates[currentTheme] || currentTheme;
+    
+    Plotly.newPlot('professional-candlestick', traces, professionalLayout, professionalConfig);
+}
+
+// Chart control functions
+function toggleFullscreen() {
+    const chartDiv = document.getElementById('professional-candlestick');
+    if (!document.fullscreenElement) {
+        if (chartDiv.requestFullscreen) {
+            chartDiv.requestFullscreen();
+        } else if (chartDiv.webkitRequestFullscreen) {
+            chartDiv.webkitRequestFullscreen();
+        } else if (chartDiv.msRequestFullscreen) {
+            chartDiv.msRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+        }
+    }
+}
+
+function changeTimeframe(tf, btn) {
+    document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    window.location.href = `/chart/${symbol}/${tf}`;
+}
+
+function toggleVolume() {
+    showVolume = document.getElementById('show-volume').checked;
+    updateChart();
+}
+
+function toggleMA() {
+    showMA = document.getElementById('show-ma').checked;
+    updateChart();
+}
+
+function toggleBollinger() {
+    showBollinger = document.getElementById('show-bollinger').checked;
+    updateChart();
+}
+
+function toggleSupport() {
+    showSupport = document.getElementById('show-support').checked;
+    updateChart();
+}
+
+function changeTheme() {
+    currentTheme = document.getElementById('chart-theme').value;
+    updateChart();
+}
+
+function updateCandleCount() {
+    currentCandleCount = document.getElementById('candle-count').value;
+    updateChart();
+}
+
+function exportChart() {
+    Plotly.downloadImage('professional-candlestick', {
+        format: 'png',
+        width: 1920,
+        height: 1080,
+        filename: `${symbol}_${timeframe}_professional_chart`
+    });
+}
+
+function fetchLatestData() {
+    return fetch(`/chart/${symbol}/${timeframe}?json=1`)
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            chartDataFull = data.chart_data;
+            chartData = getSlicedData(); // Re-slice
+            // Update live prices
+            document.getElementById('current-price').textContent = data.latest_candle.c;
+            document.getElementById('daily-high').textContent = data.latest_candle.h;
+            document.getElementById('daily-low').textContent = data.latest_candle.l;
+            document.getElementById('opening-price').textContent = data.latest_candle.o;
+            document.getElementById('volume').textContent = data.latest_candle.v ? data.latest_candle.v.toFixed(2) : 'N/A';
+            const pc = data.price_change;
+            document.getElementById('price-change').innerHTML = 
+                `<span class="badge bg-${pc >= 0 ? 'success' : 'danger'}">
+                    ${pc >= 0 ? '+' : ''}${pc}%
+                </span>`;
+            updateChart();
+        })
+        .catch(error => {
+            console.error('Error fetching latest data:', error);
+        });
+}
+
+// Initialize chart when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    showVolume = document.getElementById('show-volume').checked;
+    showMA = document.getElementById('show-ma').checked;
+    showBollinger = document.getElementById('show-bollinger').checked;
+    showSupport = document.getElementById('show-support').checked;
+    currentTheme = document.getElementById('chart-theme').value;
+    currentCandleCount = document.getElementById('candle-count').value;
+    updateChart();
+    
+    // Auto-refresh every 30 seconds
+    setInterval(fetchLatestData, 30000);
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'f' || event.key === 'F') {
+        toggleFullscreen();
+    }
+    if (event.key === 'e' || event.key === 'E') {
+        exportChart();
+    }
+});
+</script>
+
+<style>
+/* Professional styling */
+.card {
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.badge {
+    font-size: 0.75em;
+}
+
+.form-check-input:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+.btn-group .btn.active {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+}
+
+#professional-candlestick {
+    border-radius: 0 0 0.375rem 0.375rem;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+/* Custom scrollbar for chart */
+#professional-candlestick::-webkit-scrollbar {
+    height: 8px;
+}
+
+#professional-candlestick::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#professional-candlestick::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+#professional-candlestick::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Loading animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,123,255,.3);
+    border-radius: 50%;
+    border-top-color: #007bff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1rem 0.5rem;
+    }
+    
+    #professional-candlestick {
+        height: 500px !important;
+    }
+    
+    .btn-group .btn {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+</style>
+{% endblock %}

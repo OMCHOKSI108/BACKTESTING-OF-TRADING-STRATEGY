@@ -1,33 +1,188 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Results for {{ stock }}</h2>
-<p>Total Trades: {{ results.total_trades }}</p>
-<p>Total Profit: ${{ results.total_profit }}</p>
-<p>Average Profit per Trade: ${{ results.average_profit }}</p>
+<div class="container-fluid">
+    <!-- Results Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-0 text-primary">📈 Results for {{ stock }}</h2>
+                            <p class="text-muted mb-0">Strategy Performance Analysis</p>
+                        </div>
+                        <div>
+                            <a href="/candle-view?symbol={{ stock }}&timeframe=1d&market_type=Forex" 
+                               class="btn btn-primary me-2">
+                                <i class="fas fa-chart-line"></i> Professional Chart
+                            </a>
+                            <a href="/" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Back
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h4>Trade History</h4>
-<table class="table table-bordered">
-    <thead><tr><th>Buy</th><th>Sell</th></tr></thead>
-    <tbody>
-    {% for buy, sell in results.trades %}
-        <tr><td>${{ buy }}</td><td>${{ sell }}</td></tr>
-    {% endfor %}
-    </tbody>
-</table>
-<a href="/" class="btn btn-secondary">Back</a>
+    <!-- Performance Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="text-primary mb-1">{{ results.total_trades }}</h5>
+                    <small class="text-muted">Total Trades</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="mb-1 {{ 'text-success' if results.total_profit >= 0 else 'text-danger' }}">
+                        ${{ results.total_profit }}
+                    </h5>
+                    <small class="text-muted">Total Profit</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="mb-1 {{ 'text-success' if results.average_profit >= 0 else 'text-danger' }}">
+                        ${{ results.average_profit }}
+                    </h5>
+                    <small class="text-muted">Avg Profit/Trade</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="text-info mb-1">{{ results.win_rate }}%</h5>
+                    <small class="text-muted">Win Rate</small>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h4>Portfolio Value Chart</h4>
-<div id="chart"></div>
+    <!-- Charts Section -->
+    <div class="row">
+        <!-- Professional Candlestick Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar text-primary me-2"></i>
+                        Professional Candlestick Chart (Last 100 Days)
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="professional-candlestick" style="height: 500px;"></div>
+                </div>
+            </div>
+        </div>
 
-<h4>Candlestick Chart (Last 100 Days)</h4>
-<div id="candlestick"></div>
+        <!-- Portfolio Performance -->
+        <div class="col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line text-success me-2"></i>
+                        Portfolio Value
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="portfolio-chart" style="height: 250px;"></div>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm mt-3">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-area text-danger me-2"></i>
+                        Drawdown Analysis
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div id="drawdown-chart" style="height: 220px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<h4>Drawdown Chart</h4>
-<div id="drawdown"></div>
+    <!-- Trade History -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-bottom">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history text-info me-2"></i>
+                        Trade History
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Entry Price</th>
+                                    <th>Exit Price</th>
+                                    <th>Profit/Loss</th>
+                                    <th>Return %</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for loop in range(results.trades|length) %}
+                                {% set buy = results.trades[loop.index0][0] %}
+                                {% set sell = results.trades[loop.index0][1] %}
+                                {% set profit = sell - buy %}
+                                {% set return_pct = ((sell - buy) / buy * 100) if buy != 0 else 0 %}
+                                <tr>
+                                    <td>{{ loop.index }}</td>
+                                    <td>${{ "%.2f"|format(buy) }}</td>
+                                    <td>${{ "%.2f"|format(sell) }}</td>
+                                    <td class="{{ 'text-success' if profit >= 0 else 'text-danger' }}">
+                                        ${{ "%.2f"|format(profit) }}
+                                    </td>
+                                    <td class="{{ 'text-success' if return_pct >= 0 else 'text-danger' }}">
+                                        {{ "%.2f"|format(return_pct) }}%
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ 'success' if profit >= 0 else 'danger' }}">
+                                            {{ 'Win' if profit >= 0 else 'Loss' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 <script>
+    // Data from backend
     var trades = {{ results.trades | tojson | safe }};
+    
+    // Professional color scheme
+    const colors = {
+        primary: '#007bff',
+        success: '#00c851',
+        danger: '#ff4444',
+        warning: '#ffbb33',
+        info: '#33b5e5',
+        dark: '#2c3e50',
+        light: '#ecf0f1'
+    };
+
+    // Portfolio performance calculation
     var x = [];
     var y = [];
     var balance = 0;
@@ -36,57 +191,273 @@
         let profit = trades[i][1] - trades[i][0];
         y.push(i === 0 ? profit : y[i - 1] + profit);
     }
+
     // Convert profit to INR (assume 1 USD = 83 INR for demo)
     var y_inr = y.map(function(val) { return val * 83; });
-    var trace = {
+
+    // Portfolio Performance Chart
+    var portfolioTrace = {
         x: x,
         y: y_inr,
         type: 'scatter',
         mode: 'lines+markers',
-        name: 'PnL (INR)'
+        name: 'Portfolio Value',
+        line: { 
+            color: colors.primary, 
+            width: 3,
+            shape: 'spline'
+        },
+        marker: { 
+            color: colors.primary, 
+            size: 6,
+            line: { color: 'white', width: 2 }
+        },
+        hovertemplate: 'Trade: %{x}<br>Value: ₹%{y:,.2f}<extra></extra>'
     };
-    Plotly.newPlot('chart', [trace], {
-        title: 'Cumulative Profit (INR)',
-        xaxis: { title: 'Trade Number' },
-        yaxis: { title: 'Profit (₹)' }
+
+    var portfolioLayout = {
+        title: '',
+        xaxis: { 
+            title: 'Trade Number',
+            showgrid: true,
+            gridcolor: '#e1e8ed',
+            zeroline: false
+        },
+        yaxis: { 
+            title: 'Value (₹)',
+            showgrid: true,
+            gridcolor: '#e1e8ed',
+            zeroline: false,
+            tickformat: ',.0f'
+        },
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white',
+        margin: { l: 60, r: 30, t: 30, b: 50 },
+        hovermode: 'x unified'
+    };
+
+    Plotly.newPlot('portfolio-chart', [portfolioTrace], portfolioLayout, {
+        responsive: true,
+        displayModeBar: false
     });
 
-    // Candlestick chart using last 100 days of data
+    // Professional Candlestick Chart
     {% if results.candles %}
     var candle = {{ results.candles | tojson | safe }};
-    var candle_trace = {
+    
+    var candlestickTrace = {
         x: candle.dates,
         open: candle.open,
         high: candle.high,
         low: candle.low,
         close: candle.close,
         type: 'candlestick',
-        name: 'Candles'
+        name: '{{ stock }}',
+        
+        increasing: {
+            line: { color: colors.success, width: 1 },
+            fillcolor: colors.success
+        },
+        decreasing: {
+            line: { color: colors.danger, width: 1 },
+            fillcolor: colors.danger
+        },
+        
+        hovertemplate: 
+            '<b>%{x}</b><br>' +
+            'Open: %{open}<br>' +
+            'High: %{high}<br>' +
+            'Low: %{low}<br>' +
+            'Close: %{close}<extra></extra>'
     };
-    Plotly.newPlot('candlestick', [candle_trace], {
-        title: 'Candlestick Chart (Last 100 Days)',
-        xaxis: { title: 'Date' },
-        yaxis: { title: 'Price' }
+
+    // Add trade markers on the candlestick chart
+    var tradeMarkers = {
+        x: [],
+        y: [],
+        mode: 'markers',
+        type: 'scatter',
+        name: 'Trades',
+        marker: {
+            size: 10,
+            color: [],
+            symbol: 'diamond',
+            line: { color: 'white', width: 2 }
+        },
+        showlegend: false,
+        hovertemplate: 'Trade: %{text}<br>Price: %{y}<extra></extra>',
+        text: []
+    };
+
+    // Add trade points (simplified - would need actual trade dates in real implementation)
+    for (let i = 0; i < Math.min(trades.length, candle.dates.length); i++) {
+        const tradeIndex = Math.floor((i / trades.length) * candle.dates.length);
+        if (tradeIndex < candle.dates.length) {
+            tradeMarkers.x.push(candle.dates[tradeIndex]);
+            tradeMarkers.y.push(trades[i][0]); // Entry price
+            tradeMarkers.marker.color.push(colors.info);
+            tradeMarkers.text.push(`Entry $${trades[i][0]}`);
+        }
+    }
+
+    var candlestickLayout = {
+        title: '',
+        xaxis: {
+            title: '',
+            showgrid: true,
+            gridcolor: '#e1e8ed',
+            zeroline: false,
+            rangeslider: { visible: false },
+            type: 'date'
+        },
+        yaxis: {
+            title: 'Price',
+            showgrid: true,
+            gridcolor: '#e1e8ed',
+            zeroline: false,
+            side: 'right'
+        },
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white',
+        margin: { l: 30, r: 60, t: 30, b: 50 },
+        hovermode: 'x unified'
+    };
+
+    Plotly.newPlot('professional-candlestick', [candlestickTrace, tradeMarkers], candlestickLayout, {
+        responsive: true,
+        displayModeBar: true,
+        modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d', 'autoScale2d']
     });
-    // Drawdown chart
+
+    // Drawdown Chart
     var max_y = 0;
     var drawdown = [];
     for (let i = 0; i < y_inr.length; i++) {
         max_y = Math.max(max_y, y_inr[i]);
         drawdown.push(y_inr[i] - max_y);
     }
-    var dd_trace = {
+
+    var drawdownTrace = {
         x: x,
         y: drawdown,
         type: 'scatter',
-        mode: 'lines+markers',
-        name: 'Drawdown (INR)'
+        mode: 'lines',
+        name: 'Drawdown',
+        fill: 'tonexty',
+        fillcolor: 'rgba(255, 68, 68, 0.2)',
+        line: { 
+            color: colors.danger, 
+            width: 2 
+        },
+        hovertemplate: 'Trade: %{x}<br>Drawdown: ₹%{y:,.2f}<extra></extra>'
     };
-    Plotly.newPlot('drawdown', [dd_trace], {
-        title: 'Drawdown (INR)',
-        xaxis: { title: 'Trade Number' },
-        yaxis: { title: 'Drawdown (₹)' }
+
+    var drawdownLayout = {
+        title: '',
+        xaxis: { 
+            title: 'Trade Number',
+            showgrid: true,
+            gridcolor: '#e1e8ed',
+            zeroline: false
+        },
+        yaxis: { 
+            title: 'Drawdown (₹)',
+            showgrid: true,
+            gridcolor: '#e1e8ed',
+            zeroline: true,
+            tickformat: ',.0f'
+        },
+        plot_bgcolor: 'white',
+        paper_bgcolor: 'white',
+        margin: { l: 60, r: 30, t: 30, b: 50 },
+        hovermode: 'x unified'
+    };
+
+    Plotly.newPlot('drawdown-chart', [drawdownTrace], drawdownLayout, {
+        responsive: true,
+        displayModeBar: false
     });
+
     {% endif %}
+
+    // Auto-refresh charts on window resize
+    window.addEventListener('resize', function() {
+        Plotly.Plots.resize('portfolio-chart');
+        Plotly.Plots.resize('professional-candlestick');
+        Plotly.Plots.resize('drawdown-chart');
+    });
+
+    // Add loading states
+    document.addEventListener('DOMContentLoaded', function() {
+        // Simulate loading states
+        const charts = ['portfolio-chart', 'professional-candlestick', 'drawdown-chart'];
+        charts.forEach(chartId => {
+            const chartDiv = document.getElementById(chartId);
+            if (chartDiv && !chartDiv.hasChildNodes()) {
+                chartDiv.innerHTML = '<div class="d-flex justify-content-center align-items-center h-100"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+            }
+        });
+    });
 </script>
+
+<style>
+/* Professional styling for results page */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.05);
+}
+
+.badge {
+    font-size: 0.75em;
+    font-weight: 500;
+}
+
+/* Chart responsiveness */
+@media (max-width: 768px) {
+    #professional-candlestick {
+        height: 400px !important;
+    }
+    
+    #portfolio-chart,
+    #drawdown-chart {
+        height: 300px !important;
+    }
+    
+    .card-body {
+        padding: 1rem 0.5rem;
+    }
+}
+
+/* Custom scrollbar for tables */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Loading animation */
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+</style>
 {% endblock %}

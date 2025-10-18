@@ -61,9 +61,9 @@ def make_api_call(endpoint, method="GET", data=None):
     try:
         url = f"{API_BASE}{endpoint}"
         if method == "POST":
-            response = requests.post(url, json=data, timeout=30)
+            response = requests.post(url, json=data, timeout=60)  # Increased timeout for Currency Layer API
         else:
-            response = requests.get(url, timeout=30)
+            response = requests.get(url, timeout=60)  # Increased timeout for Currency Layer API
 
         response.raise_for_status()
         return response.json()
@@ -137,22 +137,23 @@ def main():
             "EICHERMOT.NS", "BPCL.NS", "INDUSINDBK.NS", "BRITANNIA.NS", "TATASTEEL.NS"
         ],
         "FX": [
-            "EURUSD=X", "GBPUSD=X", "USDJPY=X", "USDCHF=X", "AUDUSD=X", "USDCAD=X",
-            "NZDUSD=X", "EURJPY=X", "GBPJPY=X", "EURGBP=X", "EURCHF=X", "EURAUD=X",
-            "EURNZD=X", "EURCAD=X", "GBPCHF=X", "GBPAUD=X", "GBPNZD=X", "GBPCAD=X",
-            "AUDJPY=X", "AUDCHF=X", "AUDNZD=X", "AUDCAD=X", "NZDJPY=X", "NZDCHF=X",
-            "NZDCAD=X", "CADJPY=X", "CADCHF=X", "CHFJPY=X", "USDINR=X", "USDSGD=X",
-            "USDHKD=X", "USDMXN=X", "USDBRL=X", "USDRUB=X", "USDCNY=X", "USDZAR=X",
-            "USDTRY=X", "USDKRW=X", "USDTHB=X", "USDPLN=X"
+            "EURUSD", "GBPUSD", "USDJPY", "USDCHF", "AUDUSD", "USDCAD",
+            "NZDUSD", "EURJPY", "GBPJPY", "EURGBP", "EURCHF", "EURAUD",
+            "EURNZD", "EURCAD", "GBPCHF", "GBPAUD", "GBPNZD", "GBPCAD",
+            "AUDJPY", "AUDCHF", "AUDNZD", "AUDCAD", "NZDJPY", "NZDCHF",
+            "NZDCAD", "CADJPY", "CADCHF", "CHFJPY", "USDINR", "USDSGD",
+            "USDHKD", "USDMXN", "USDBRL", "USDRUB", "USDCNY", "USDZAR",
+            "USDTRY", "USDKRW", "USDTHB", "USDPLN", "USDSEK", "USDNOK"
         ],
         "CRYPTO": [
-            "BTC-USD", "ETH-USD", "BNB-USD", "XRP-USD", "ADA-USD", "SOL-USD",
-            "DOGE-USD", "DOT-USD", "AVAX-USD", "SHIB-USD", "MATIC-USD", "LTC-USD",
-            "UNI-USD", "LINK-USD", "BCH-USD", "ALGO-USD", "XLM-USD", "VET-USD",
-            "ICP-USD", "ETC-USD", "FIL-USD", "TRX-USD", "ATOM-USD", "HBAR-USD",
-            "NEAR-USD", "FTM-USD", "MANA-USD", "SAND-USD", "THETA-USD", "EGLD-USD",
-            "XTZ-USD", "AXS-USD", "FLOW-USD", "ENJ-USD", "CHZ-USD", "KLAY-USD",
-            "ZIL-USD", "COMP-USD", "YFI-USD", "SUSHI-USD"
+            "BTC", "ETH", "BNB", "XRP", "ADA", "SOL",
+            "DOGE", "DOT", "AVAX", "SHIB", "MATIC", "LTC",
+            "UNI", "LINK", "BCH", "ALGO", "XLM", "VET",
+            "ICP", "ETC", "FIL", "TRX", "ATOM", "HBAR",
+            "NEAR", "FTM", "MANA", "SAND", "THETA", "EGLD",
+            "XTZ", "AXS", "FLOW", "ENJ", "CHZ", "KLAY",
+            "ZIL", "COMP", "YFI", "SUSHI", "AAVE", "MKR",
+            "1INCH", "ALPHA", "BAL", "CRV", "SNX", "RUNE"
         ]
     }
 
@@ -160,11 +161,25 @@ def main():
     st.sidebar.subheader("📊 Symbol Selection")
     available_symbols = symbols_by_exchange.get(exchange_code, ["AAPL"])
     
-    symbol = st.sidebar.selectbox(
-        "Symbol",
-        available_symbols,
-        help=f"Select from top 40 symbols in {selected_exchange}"
-    )
+    # Option to use predefined list or custom symbol
+    use_custom_symbol = st.sidebar.checkbox("🔧 Enter Custom Symbol", help="Enable to enter symbols not in the predefined list")
+    
+    if use_custom_symbol:
+        symbol = st.sidebar.text_input(
+            "Custom Symbol",
+            value="",
+            help=f"Enter custom symbol for {selected_exchange} (e.g., BTC for crypto, EURUSD for forex)"
+        ).upper()
+        
+        if not symbol:
+            st.sidebar.warning("Please enter a symbol")
+            symbol = available_symbols[0]  # Default fallback
+    else:
+        symbol = st.sidebar.selectbox(
+            "Symbol",
+            available_symbols,
+            help=f"Select from curated list of symbols in {selected_exchange}"
+        )
 
     # Set market type based on exchange
     market_type_mapping = {
@@ -174,6 +189,14 @@ def main():
         "CRYPTO": "Crypto"
     }
     market_type = market_type_mapping.get(exchange_code, "US Stocks")
+
+    # Show data source information
+    if exchange_code == "CRYPTO":
+        st.sidebar.info("🔗 **Crypto Data Sources:** Binance API (primary), CoinGecko API (fallback)")
+    elif exchange_code == "FX":
+        st.sidebar.info("🔗 **Forex Data Sources:** Alpha Vantage API with advanced validation")
+    else:
+        st.sidebar.info("🔗 **Stock Data Sources:** Yahoo Finance, Alpha Vantage, Finnhub")
 
     # Timeframe selector
     timeframe_options = {
@@ -196,15 +219,28 @@ def main():
     )
     timeframe = timeframe_options[timeframe_display]
 
-    # Date range selector
+    # Date range selector with intelligent defaults based on timeframe
     st.sidebar.subheader("📅 Date Range")
+    
+    # Calculate appropriate default date range based on timeframe
+    if timeframe in ['1m', '5m', '15m', '30m', '45m']:
+        # Intraday data - limit to last 30 days to avoid API restrictions
+        default_days = 30
+        st.sidebar.info("📋 Note: Intraday data limited to last 30 days due to API restrictions")
+    elif timeframe in ['1h', '4h']:
+        # Hourly data - 90 days
+        default_days = 90
+    else:
+        # Daily, weekly, monthly - full year
+        default_days = 365
+    
     col1, col2 = st.sidebar.columns(2)
 
     with col1:
         start_date = st.date_input(
             "Start Date",
-            value=datetime.now() - timedelta(days=365),
-            help="Start date for data analysis"
+            value=datetime.now() - timedelta(days=default_days),
+            help=f"Start date for data analysis (max {default_days} days for {timeframe_display})"
         )
 
     with col2:
@@ -633,9 +669,9 @@ def main():
                     import plotly.graph_objects as go
                     from plotly.subplots import make_subplots
                     
-                    # Create equity curve DataFrame
+                    # Create equity curve DataFrame with better labeling
                     eq_df = pd.DataFrame({
-                        'Time': range(len(equity_curve)),
+                        'Trade_Number': range(len(equity_curve)),
                         'Portfolio_Value': equity_curve,
                         'Returns': [(val - initial_balance) for val in equity_curve],
                         'Returns_Pct': [((val - initial_balance) / initial_balance * 100) for val in equity_curve]
@@ -644,20 +680,21 @@ def main():
                     # Create subplots
                     fig = make_subplots(
                         rows=2, cols=1,
-                        subplot_titles=('Portfolio Value Over Time', 'Returns Percentage'),
-                        vertical_spacing=0.1,
+                        subplot_titles=('Portfolio Value Over Time', 'Returns Percentage Over Time'),
+                        vertical_spacing=0.12,
                         row_heights=[0.7, 0.3]
                     )
                     
-                    # Portfolio value chart
+                    # Portfolio value chart with markers
                     fig.add_trace(
                         go.Scatter(
-                            x=eq_df['Time'],
+                            x=eq_df['Trade_Number'],
                             y=eq_df['Portfolio_Value'],
-                            mode='lines',
+                            mode='lines+markers',
                             name='Portfolio Value',
-                            line=dict(color='#1f77b4', width=3),
-                            hovertemplate='<b>Time:</b> %{x}<br><b>Value:</b> $%{y:,.2f}<extra></extra>'
+                            line=dict(color='#0068c9', width=3),
+                            marker=dict(size=6, color='#0068c9'),
+                            hovertemplate='<b>Trade:</b> %{x}<br><b>Equity:</b> $%{y:,.2f}<extra></extra>'
                         ),
                         row=1, col=1
                     )
@@ -671,17 +708,17 @@ def main():
                         row=1, col=1
                     )
                     
-                    # Returns percentage chart
+                    # Returns percentage chart with improved styling
                     colors = ['green' if x >= 0 else 'red' for x in eq_df['Returns_Pct']]
                     fig.add_trace(
                         go.Scatter(
-                            x=eq_df['Time'],
+                            x=eq_df['Trade_Number'],
                             y=eq_df['Returns_Pct'],
                             mode='lines+markers',
                             name='Returns %',
                             line=dict(color='#ff7f0e', width=2),
-                            marker=dict(color=colors, size=4),
-                            hovertemplate='<b>Time:</b> %{x}<br><b>Return:</b> %{y:.2f}%<extra></extra>'
+                            marker=dict(color=colors, size=5),
+                            hovertemplate='<b>Trade:</b> %{x}<br><b>Return:</b> %{y:.2f}%<extra></extra>'
                         ),
                         row=2, col=1
                     )
@@ -697,7 +734,7 @@ def main():
                         hovermode='x unified'
                     )
                     
-                    fig.update_xaxes(title_text="Time Period", row=2, col=1)
+                    fig.update_xaxes(title_text="Trade Number", row=2, col=1)
                     fig.update_yaxes(title_text="Portfolio Value ($)", row=1, col=1)
                     fig.update_yaxes(title_text="Returns (%)", row=2, col=1)
                     
@@ -907,7 +944,7 @@ def main():
                     st.write(f"• **Total Trades:** {results.get('total_trades', 0)}")
                     st.write(f"• **Winning Trades:** {results.get('winning_trades', 0)}")
                     st.write(f"• **Losing Trades:** {results.get('losing_trades', 0)}")
-                    st.write(f"• **Win Rate:** {(results.get('win_rate', 0) * 100):.1f}%")
+                    st.write(f"• **Win Rate:** {results.get('win_rate', 0):.1f}%")
                     st.write(f"• **Average Trade P&L:** ${results.get('average_trade_pnl', 0):.2f}")
                     
                     st.markdown("**⏱️ Duration Metrics**")
@@ -921,7 +958,7 @@ def main():
                     'Value': [
                         f"${results.get('net_profit_loss', 0):.2f}",
                         results.get('total_trades', 0),
-                        f"{(results.get('win_rate', 0) * 100):.1f}%",
+                        f"{results.get('win_rate', 0):.1f}%",
                         f"{results.get('profit_factor', 0):.2f}",
                         f"${results.get('max_drawdown', 0):.2f}",
                         f"{results.get('sharpe_ratio', 0):.3f}",
