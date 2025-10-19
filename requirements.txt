@@ -24,5 +24,4 @@ pytest
 black
 pytest-asyncio
 lightgbm
-pandas-ta
-quantstats
+beautifulsoup4

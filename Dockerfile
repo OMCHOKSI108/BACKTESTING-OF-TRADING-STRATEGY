@@ -23,11 +23,11 @@ COPY . .
 RUN mkdir -p app/data/raw app/data/processed app/data/trade_history app/reports
 
 # Expose ports
-EXPOSE 5000 8501
+EXPOSE 3000 8501
 
 # Set environment variables
 ENV FLASK_APP=app
 ENV FLASK_ENV=production
 
-# Default command: run Flask backend
-CMD ["python", "app.py"]
+# Default command: run both Flask and Streamlit (can be overridden by docker-compose)
+CMD ["python", "app.py", "both"]

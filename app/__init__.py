@@ -15,6 +15,7 @@ def create_app():
     from app.routes.report_routes import report_bp
     from app.routes.performance_routes import performance_bp
     from app.routes.candle_routes import candle_bp
+    from app.routes.ai_routes import ai_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(strategies_bp)
@@ -23,5 +24,6 @@ def create_app():
     app.register_blueprint(report_bp)
     app.register_blueprint(performance_bp)
     app.register_blueprint(candle_bp)
+    app.register_blueprint(ai_bp, url_prefix='/api/ai')
 
     return app

@@ -142,7 +142,7 @@ def main():
             "ULTRACEMCO.NS", "TITAN.NS", "SUNPHARMA.NS", "NESTLEIND.NS", "WIPRO.NS",
             "POWERGRID.NS", "ONGC.NS", "NTPC.NS", "JSWSTEEL.NS", "TATAMOTORS.NS",
             "BAJAJFINSV.NS", "M&M.NS", "HINDUNILVR.NS", "TECHM.NS", "COALINDIA.NS",
-            "HINDALCO.NS", "GRASIM.NS", "ADANIENT.NS", "CIPLA.NS", "DRREDDY.NS",
+            "HINDALCO.NS", "GRASIM.NS", "ADANIENT.NS", "CIPLA.NS",
             "EICHERMOT.NS", "BPCL.NS", "INDUSINDBK.NS", "BRITANNIA.NS", "TATASTEEL.NS"
         ],
         "FX": [
@@ -270,7 +270,7 @@ def main():
     )
 
     # Main content area
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 Data Gathering", "📋 Dataset View", "⚡ Strategy Testing", "📈 Results", "📋 Reports"])
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["📊 Data Gathering", "📋 Dataset View", "⚡ Strategy Testing", "📈 Results", "📋 Reports", "🤖 AI Agent"])
 
     # Tab 1: Data Gathering
     with tab1:
@@ -512,125 +512,6 @@ def main():
                     st.success("✅ Strategy comparison completed!")
                 else:
                     st.error("❌ Strategy comparison failed")
-
-    # Tab 3: Results
-    with tab3:
-        st.header("Results")
-
-        # Display last strategy results
-        if "last_results" in st.session_state:
-            results = st.session_state.last_results
-            strategy_id = st.session_state.get("last_strategy", "Unknown")
-
-            # Key metrics in columns
-            col1, col2, col3, col4 = st.columns(4)
-
-            with col1:
-                currency_symbol = get_currency_symbol(market_type)
-                st.metric("Net P&L", f"{currency_symbol}{results.get('net_profit_loss', 0):,.2f}")
-            with col2:
-                st.metric("Win Rate", f"{results.get('win_rate', 0):.1f}%")
-            with col3:
-                st.metric("Total Trades", results.get('total_trades', 0))
-            with col4:
-                st.metric("Sharpe Ratio", f"{results.get('sharpe_ratio', 0):.2f}")
-
-            # Additional metrics
-            col1, col2, col3, col4 = st.columns(4)
-
-            with col1:
-                currency_symbol = get_currency_symbol(market_type)
-                st.metric("Max Drawdown", f"{currency_symbol}{results.get('max_drawdown', 0):,.2f}")
-            with col2:
-                st.metric("Profit Factor", f"{results.get('profit_factor', 0):.2f}")
-            with col3:
-                currency_symbol = get_currency_symbol(market_type)
-                st.metric("Avg Trade P&L", f"{currency_symbol}{results.get('average_trade_pnl', 0):,.2f}")
-            with col4:
-                currency_symbol = get_currency_symbol(market_type)
-                st.metric("Final Balance", f"{currency_symbol}{results.get('final_balance', 0):,.2f}")
-
-            # Equity curve placeholder
-            st.subheader("Equity Curve")
-            if "equity_curve" in results and results["equity_curve"]:
-                equity_df = pd.DataFrame({
-                    "Trade": range(len(results["equity_curve"])),
-                    "Equity": results["equity_curve"]
-                })
-                st.line_chart(equity_df.set_index("Trade"))
-            else:
-                st.info("Equity curve data not available")
-
-        # Display comparison results
-        if "comparison_results" in st.session_state:
-            st.subheader("⚖️ Strategy Comparison")
-
-            comparison = st.session_state.comparison_results.get("comparison", {})
-            individual_results = st.session_state.comparison_results.get("individual_results", [])
-
-            if comparison:
-                # Best strategy highlight
-                best_strategy = comparison.get("best_strategy", "N/A")
-                best_pnl = comparison.get("best_net_profit", 0)
-
-                st.success(f"🏆 Best Performing Strategy: {best_strategy} ({get_currency_symbol(market_type)}{best_pnl:,.2f} P&L)")
-
-                # Comparison table
-                comp_data = {
-                    "Strategy": comparison.get("strategies", []),
-                    "Net P&L": comparison.get("net_profits", []),
-                    "Win Rate": comparison.get("win_rates", []),
-                    "Sharpe Ratio": comparison.get("sharpe_ratios", []),
-                    "Max Drawdown": comparison.get("max_drawdowns", [])
-                }
-
-                comp_df = pd.DataFrame(comp_data)
-                st.dataframe(comp_df, use_container_width=True)
-
-    # Tab 4: Reports
-    with tab4:
-        st.header("Reports")
-
-        if "last_results" in st.session_state:
-            st.subheader("📄 Generate PDF Report")
-
-            if st.button("Generate Strategy Report", use_container_width=True):
-                with st.spinner("Generating PDF report..."):
-                    report_payload = {
-                        "symbol": symbol,
-                        "strategy_name": f"Strategy {st.session_state.get('last_strategy', 'Unknown')}",
-                        "results": st.session_state.last_results
-                    }
-
-                    result = make_api_call("/api/report/generate", method="POST", data=report_payload)
-
-                    if result and result.get("success"):
-                        st.success("✅ PDF report generated successfully!")
-                        download_url = result.get("download_url", "")
-                        if download_url:
-                            st.markdown(f"[📥 Download Report]({DISPLAY_API_BASE}{download_url})")
-                    else:
-                        st.error("❌ Failed to generate PDF report")
-
-        if "comparison_results" in st.session_state:
-            st.subheader("Generate Comparison Report")
-
-            if st.button("Generate Comparison Report", use_container_width=True):
-                with st.spinner("Generating comparison PDF report..."):
-                    comparison_payload = {
-                        "symbol": symbol,
-                        "results_list": st.session_state.comparison_results.get("individual_results", [])
-                    }
-
-                    result = make_api_call("/api/report/compare", method="POST", data=comparison_payload)
-
-                    if result and result.get("success"):
-                        st.success("✅ Comparison report generated successfully!")
-                        download_url = result.get("download_url", "")
-                        if download_url:
-                            st.markdown(f"[📥 Download Comparison Report]({DISPLAY_API_BASE}{download_url})")
-                    else:
-                        st.error("❌ Failed to generate comparison report")
 
     # Tab 4: Results
     with tab4:
@@ -1047,6 +928,389 @@ def main():
         
         if not ("last_results" in st.session_state or "comparison_results" in st.session_state):
             st.info("📋 No results available for report generation. Please run strategies first.")
+
+    # Tab 6: AI Agent
+    with tab6:
+        # Perplexity-inspired Custom CSS
+        st.markdown("""
+        <style>
+        /* Clean Perplexity-style design */
+        .perplexity-header {
+            background: white;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .perplexity-header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+        .perplexity-header p {
+            font-size: 1.1rem;
+            color: #6b7280;
+            margin-top: 0.75rem;
+            font-weight: 400;
+        }
+        .thinking-animation {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 2.5rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .thinking-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+        }
+        .thinking-subtext {
+            font-size: 0.95rem;
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+        .thinking-dots {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+        }
+        .thinking-dot {
+            width: 8px;
+            height: 8px;
+            background: #3b82f6;
+            border-radius: 50%;
+            animation: bounce 1.4s ease-in-out infinite both;
+        }
+        .thinking-dot:nth-child(1) { animation-delay: -0.32s; }
+        .thinking-dot:nth-child(2) { animation-delay: -0.16s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-10px); opacity: 1; }
+        }
+        .response-container {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 1.5rem 0;
+        }
+        .response-section {
+            margin-bottom: 1.5rem;
+        }
+        .response-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 0.75rem;
+        }
+        .response-section p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #374151;
+        }
+        .source-item {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            transition: border-color 0.2s;
+        }
+        .source-item:hover {
+            border-color: #3b82f6;
+        }
+        .source-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 0.25rem;
+        }
+        .source-url {
+            font-size: 0.85rem;
+            color: #3b82f6;
+            text-decoration: none;
+        }
+        .metric-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+        .metric-box-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+        .metric-box-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        .progress-step {
+            font-size: 0.95rem;
+            color: #6b7280;
+            padding: 0.5rem 0;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+
+        # Clean Header
+        st.markdown("""
+        <div class="perplexity-header">
+            <h1>🤖 AI Financial Analyst</h1>
+            <p>Advanced market research powered by AI and real-time data</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Initialize session state for chat history
+        if 'ai_chat_history' not in st.session_state:
+            st.session_state.ai_chat_history = []
+
+        # Chat History Section
+        if st.session_state.ai_chat_history:
+            st.markdown("### 💬 Research History")
+
+            chat_container = st.container()
+
+            with chat_container:
+                for i, message in enumerate(st.session_state.ai_chat_history):
+                    if message['role'] == 'user':
+                        st.markdown(f"""
+                        <div style="background: #e3f2fd; padding: 1rem; border-radius: 10px; margin: 0.5rem 0; border-left: 4px solid #2196f3;">
+                            <strong>👤 Your Question:</strong><br>{message['content']}
+                        </div>
+                        """, unsafe_allow_html=True)
+                    else:
+                        with st.expander(f"🤖 AI Analysis #{i//2 + 1}", expanded=False):
+                            st.markdown(message['content'])
+                            if 'timestamp' in message:
+                                st.caption(f"📅 Generated on: {message['timestamp']}")
+
+        # Input Section
+        st.markdown("### � Ask Your Financial Question")
+
+        with st.form(key="ai_chat_form"):
+            col1, col2 = st.columns([3, 1])
+
+            with col1:
+                user_query = st.text_area(
+                    "",
+                    placeholder="e.g., 'What are the current market trends for EURUSD?', 'Analyze Bitcoin's technical indicators', 'Research Fed's impact on stocks'",
+                    height=80,
+                    label_visibility="collapsed"
+                )
+
+            with col2:
+                max_results = st.selectbox(
+                    "Research Depth",
+                    options=[3, 5, 7, 10],
+                    index=1,
+                    help="Number of sources to analyze"
+                )
+
+            # Submit button with custom styling
+            submit_button = st.form_submit_button(
+                "🚀 Analyze Markets",
+                type="primary",
+                use_container_width=True
+            )
+
+        # Enhanced AI Agent interaction with Perplexity-style animation
+        if submit_button and user_query.strip():
+            # Create placeholders for dynamic content
+            animation_placeholder = st.empty()
+            response_placeholder = st.empty()
+
+            # Perplexity-style thinking animation
+            with animation_placeholder.container():
+                st.markdown("""
+                <div class="thinking-animation">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🧠</div>
+                    <div style="font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem;">AI Analyst is Thinking</div>
+                    <div style="font-size: 1rem; opacity: 0.9; margin-bottom: 1rem;">Searching financial databases & analyzing market data</div>
+                    <div class="thinking-dots">
+                        <div class="thinking-dot"></div>
+                        <div class="thinking-dot"></div>
+                        <div class="thinking-dot"></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                # Progress stages with smooth transitions
+                progress_phases = [
+                    "🔍 Scanning financial news sources...",
+                    "📊 Analyzing market indicators...",
+                    "📰 Cross-referencing latest reports...",
+                    "🤖 Processing with advanced AI algorithms...",
+                    "📈 Generating comprehensive analysis...",
+                    "✨ Finalizing professional insights..."
+                ]
+
+                progress_bar = st.progress(0)
+                status_text = st.empty()
+
+                for i, phase in enumerate(progress_phases):
+                    status_text.markdown(f"**{phase}**")
+                    progress_bar.progress((i + 1) / len(progress_phases))
+                    time.sleep(0.7)
+
+                progress_bar.empty()
+                status_text.empty()
+
+            # Clear animation and make API call
+            animation_placeholder.empty()
+
+            with st.spinner(""):
+                research_payload = {
+                    "query": user_query.strip(),
+                    "max_results": max_results
+                }
+
+                result = make_api_call("/api/ai/research", method="POST", data=research_payload)
+
+                if result and result.get("success"):
+                    # Add to chat history
+                    st.session_state.ai_chat_history.append({
+                        'role': 'user',
+                        'content': user_query.strip(),
+                        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    })
+
+                    # Format and display response
+                    with response_placeholder.container():
+                        ai_response = result.get("analysis", {})
+
+                        # Main Analysis Card
+                        st.markdown("""
+                        <div class="response-card">
+                            <h3 style="color: #667eea; margin-top: 0;">📊 AI Market Analysis</h3>
+                        </div>
+                        """, unsafe_allow_html=True)
+
+                        # Market Overview
+                        if isinstance(ai_response, dict) and ai_response.get('market_overview'):
+                            st.markdown(f"**Market Overview:** {ai_response['market_overview']}")
+
+                        # Key Factors
+                        if isinstance(ai_response, dict) and ai_response.get('key_factors'):
+                            st.markdown("**Key Market Factors:**")
+                            for factor in ai_response['key_factors']:
+                                st.markdown(f"• {factor}")
+
+                        # Technical Analysis
+                        if isinstance(ai_response, dict) and ai_response.get('technical_analysis'):
+                            st.markdown("**📊 Technical Analysis:**")
+                            st.info(ai_response['technical_analysis'])
+
+                        # Risk Assessment
+                        if isinstance(ai_response, dict) and ai_response.get('risk_assessment'):
+                            st.markdown("**⚠️ Risk Assessment:**")
+                            st.warning(ai_response['risk_assessment'])
+
+                        # Market Outlook
+                        if isinstance(ai_response, dict) and ai_response.get('outlook'):
+                            st.markdown("**🔮 Market Outlook:**")
+                            st.success(ai_response['outlook'])
+
+                        # Confidence Level
+                        if isinstance(ai_response, dict) and ai_response.get('confidence_level'):
+                            confidence_color = {
+                                'High': '🟢',
+                                'Medium': '🟡',
+                                'Low': '🔴'
+                            }.get(ai_response['confidence_level'], '⚪')
+                            st.markdown(f"**🎯 Confidence Level:** {confidence_color} {ai_response['confidence_level']}")
+
+                        # Research Sources
+                        if 'web_sources' in result and result['web_sources']:
+                            st.markdown("### 🌐 Research Sources")
+                            for i, source in enumerate(result['web_sources'][:max_results]):
+                                with st.expander(f"📄 Source {i+1}: {source.get('source', 'Unknown')}", expanded=False):
+                                    st.markdown(f"**URL:** {source.get('url', 'N/A')}")
+                                    st.markdown(f"**Summary:** {source.get('snippet', 'No description available')}")
+
+                        # Recommendations
+                        if 'recommendations' in result and result['recommendations']:
+                            st.markdown("### 💡 AI Recommendations")
+                            for rec in result['recommendations']:
+                                st.markdown(f"• {rec}")
+
+                        # Metrics Grid
+                        st.markdown("### � Analysis Metrics")
+                        col1, col2, col3, col4 = st.columns(4)
+
+                        with col1:
+                            st.metric("Sources Analyzed", len(result.get('web_sources', [])))
+                        with col2:
+                            st.metric("Research Method", "AI + Web Search")
+                        with col3:
+                            st.metric("Analysis Depth", f"Top {max_results}")
+                        with col4:
+                            st.metric("Generated", datetime.now().strftime("%H:%M:%S"))
+
+                    # Add to history
+                    st.session_state.ai_chat_history.append({
+                        'role': 'assistant',
+                        'content': response_placeholder,
+                        'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    })
+
+                    st.success("✅ Analysis completed! Results displayed above.")
+                    st.rerun()
+
+                else:
+                    animation_placeholder.empty()
+                    error_msg = result.get("error", "Unknown error") if result else "Failed to connect to AI service"
+                    st.error(f"❌ Analysis failed: {error_msg}")
+
+        # Clear chat history
+        if st.session_state.ai_chat_history:
+            col1, col2, col3 = st.columns([1, 1, 2])
+            with col1:
+                if st.button("🗑️ Clear History", use_container_width=True):
+                    st.session_state.ai_chat_history = []
+                    st.success("History cleared!")
+                    st.rerun()
+
+        # Capabilities Section
+        with st.expander("ℹ️ AI Analyst Capabilities", expanded=False):
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("""
+                **🔍 Research Capabilities:**
+                - Real-time market data analysis
+                - Multi-source news aggregation
+                - Technical indicator evaluation
+                - Risk assessment modeling
+                - Trend prediction algorithms
+                """)
+
+            with col2:
+                st.markdown("""
+                **📊 Analysis Types:**
+                - Forex market analysis
+                - Stock market research
+                - Cryptocurrency trends
+                - Economic indicator impact
+                - Trading strategy evaluation
+                """)
+
+            st.markdown("""
+            **💡 Example Queries:**
+            - "Analyze EURUSD technical indicators"
+            - "What are Bitcoin's market trends?"
+            - "Research impact of Fed decisions"
+            - "Compare stock market sectors"
+            - "Analyze commodity price movements"
+            """)
 
     # Footer
     st.markdown("---")
