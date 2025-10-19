@@ -10,6 +10,10 @@ services:
       - CURRENCY_LAYER_API_KEY1=${CURRENCY_LAYER_API_KEY1:-}
       - CURRENCY_LAYER_API_KEY2=${CURRENCY_LAYER_API_KEY2:-}
       - CURRENCY_LAYER_API_KEY3=${CURRENCY_LAYER_API_KEY3:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - USE_CRAWL4AI=${USE_CRAWL4AI:-true}
+      - GOOGLE_SEARCH_API_KEY=${GOOGLE_SEARCH_API_KEY:-}
+      - GOOGLE_SEARCH_ENGINE_ID=${GOOGLE_SEARCH_ENGINE_ID:-}
     volumes:
       - ./app/data:/app/app/data
       - ./app/reports:/app/app/reports
@@ -27,6 +31,10 @@ services:
       - CURRENCY_LAYER_API_KEY1=${CURRENCY_LAYER_API_KEY1:-}
       - CURRENCY_LAYER_API_KEY2=${CURRENCY_LAYER_API_KEY2:-}
       - CURRENCY_LAYER_API_KEY3=${CURRENCY_LAYER_API_KEY3:-}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - USE_CRAWL4AI=${USE_CRAWL4AI:-true}
+      - GOOGLE_SEARCH_API_KEY=${GOOGLE_SEARCH_API_KEY:-}
+      - GOOGLE_SEARCH_ENGINE_ID=${GOOGLE_SEARCH_ENGINE_ID:-}
     volumes:
       - ./app/data:/app/app/data
       - ./app/reports:/app/app/reports

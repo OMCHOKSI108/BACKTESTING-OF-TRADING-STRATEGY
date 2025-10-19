@@ -83,9 +83,12 @@
                             <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '1m' %}active{% endif %}" onclick="changeTimeframe('1m', this)">1m</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '5m' %}active{% endif %}" onclick="changeTimeframe('5m', this)">5m</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '15m' %}active{% endif %}" onclick="changeTimeframe('15m', this)">15m</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '30m' %}active{% endif %}" onclick="changeTimeframe('30m', this)">30m</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '1h' %}active{% endif %}" onclick="changeTimeframe('1h', this)">1h</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '4h' %}active{% endif %}" onclick="changeTimeframe('4h', this)">4h</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '1d' %}active{% endif %}" onclick="changeTimeframe('1d', this)">1D</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '1w' %}active{% endif %}" onclick="changeTimeframe('1w', this)">1W</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary {% if timeframe == '1mo' %}active{% endif %}" onclick="changeTimeframe('1mo', this)">1M</button>
                         </div>
                     </div>
                 </div>
@@ -167,6 +170,7 @@ const chartDataFull = {{ chart_data | default({}) | tojson | safe }};
 let chartData = chartDataFull;
 const symbol = "{{ symbol }}";
 const timeframe = "{{ timeframe }}";
+const isEmptyChart = {{ is_empty_chart | default(false) | tojson | safe }};
 let currentTheme = "{{ chart_theme | default('plotly_white') }}";
 let currentCandleCount = 100;
 let showVolume = true;
@@ -450,9 +454,53 @@ function createSupportResistanceTraces(data) {
 // Update chart function
 function updateChart() {
     const sliced = getSlicedData();
-    if (!sliced.dates || sliced.dates.length === 0) {
-        document.getElementById('professional-candlestick').innerHTML = 
-            '<div class="alert alert-danger p-4">Error: No data available</div>';
+    
+    // Handle empty chart data (blank/white candlestick chart)
+    if (!sliced.dates || sliced.dates.length === 0 || isEmptyChart) {
+        // Create a blank chart with white background
+        const blankLayout = {
+            title: {
+                text: `${symbol} - No Data Available`,
+                font: { size: 16, family: 'Arial, sans-serif', color: '#666' },
+                x: 0.5,
+                xanchor: 'center'
+            },
+            xaxis: {
+                showgrid: false,
+                zeroline: false,
+                showticklabels: false
+            },
+            yaxis: {
+                showgrid: false,
+                zeroline: false,
+                showticklabels: false
+            },
+            plot_bgcolor: '#ffffff',
+            paper_bgcolor: '#ffffff',
+            annotations: [{
+                text: 'No chart data available for the selected symbol and timeframe.<br>Please check if data has been gathered or try a different timeframe.',
+                showarrow: false,
+                xref: 'paper',
+                yref: 'paper',
+                x: 0.5,
+                y: 0.5,
+                xanchor: 'center',
+                yanchor: 'middle',
+                font: { size: 14, color: '#666' }
+            }],
+            margin: { l: 40, r: 40, t: 60, b: 40 }
+        };
+        
+        const blankData = [{
+            type: 'scatter',
+            mode: 'markers',
+            x: [0],
+            y: [0],
+            marker: { size: 0 },
+            showlegend: false
+        }];
+        
+        Plotly.newPlot('professional-candlestick', blankData, blankLayout, professionalConfig);
         return;
     }
 
@@ -503,9 +551,24 @@ function toggleFullscreen() {
 }
 
 function changeTimeframe(tf, btn) {
+    // Get current parameters from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const symbol = urlParams.get('symbol') || '{{ symbol }}';
+    const marketType = urlParams.get('market_type') || '{{ market_type }}';
+    const days = urlParams.get('days') || '100';
+
+    // Update button states
     document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    window.location.href = `/chart/${symbol}/${tf}`;
+
+    // Construct correct URL with query parameters
+    const newUrl = `/candle-view?symbol=${symbol}&timeframe=${tf}&market_type=${marketType}&days=${days}`;
+
+    // Show loading state
+    showLoading();
+
+    // Navigate to new URL
+    window.location.href = newUrl;
 }
 
 function toggleVolume() {
@@ -548,29 +611,59 @@ function exportChart() {
 }
 
 function fetchLatestData() {
-    return fetch(`/chart/${symbol}/${timeframe}?json=1`)
+    // Build API request with POST method and JSON data
+    const requestData = {
+        symbol: symbol,
+        timeframe: timeframe,
+        market_type: '{{ market_type }}',
+        count: currentCandleCount
+    };
+
+    return fetch('/api/candle-data', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
+    })
         .then(response => {
             if (!response.ok) throw new Error('Network response was not ok');
             return response.json();
         })
         .then(data => {
-            chartDataFull = data.chart_data;
-            chartData = getSlicedData(); // Re-slice
-            // Update live prices
-            document.getElementById('current-price').textContent = data.latest_candle.c;
-            document.getElementById('daily-high').textContent = data.latest_candle.h;
-            document.getElementById('daily-low').textContent = data.latest_candle.l;
-            document.getElementById('opening-price').textContent = data.latest_candle.o;
-            document.getElementById('volume').textContent = data.latest_candle.v ? data.latest_candle.v.toFixed(2) : 'N/A';
-            const pc = data.price_change;
-            document.getElementById('price-change').innerHTML = 
-                `<span class="badge bg-${pc >= 0 ? 'success' : 'danger'}">
-                    ${pc >= 0 ? '+' : ''}${pc}%
-                </span>`;
-            updateChart();
+            if (data.success && data.chart_data) {
+                chartDataFull = data.chart_data;
+                chartData = getSlicedData(); // Re-slice
+
+                // Update live prices if available
+                if (data.latest_candle) {
+                    document.getElementById('current-price').textContent = data.latest_candle.c || 'N/A';
+                    document.getElementById('daily-high').textContent = data.latest_candle.h || 'N/A';
+                    document.getElementById('daily-low').textContent = data.latest_candle.l || 'N/A';
+                    document.getElementById('opening-price').textContent = data.latest_candle.o || 'N/A';
+                    document.getElementById('volume').textContent = data.latest_candle.v ? data.latest_candle.v.toFixed(2) : 'N/A';
+
+                    const pc = data.price_change || 0;
+                    document.getElementById('price-change').innerHTML =
+                        `<span class="badge bg-${pc >= 0 ? 'success' : 'danger'}">
+                            ${pc >= 0 ? '+' : ''}${pc.toFixed(2)}%
+                        </span>`;
+                }
+
+                // Update chart
+                updateChart();
+            } else {
+                // Handle empty data gracefully
+                console.warn('No chart data received from API');
+                isEmptyChart = true;
+                updateChart();
+            }
         })
         .catch(error => {
             console.error('Error fetching latest data:', error);
+            // Show blank chart on error
+            isEmptyChart = true;
+            updateChart();
         });
 }
 
