@@ -1,11 +1,17 @@
 services:
   trading-app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - BUILDKIT_INLINE_CACHE=1
     ports:
       - "3000:3000"   # Flask API
       - "8501:8501"   # Streamlit UI
     environment:
       - FLASK_ENV=production
+      - DOCKER_ENV=true
+      # API Keys (use secrets in production)
       - FINNHUB_API_KEY=${FINNHUB_API_KEY:-}
       - ALPHA_VANTAGE_API_KEY=${ALPHA_VANTAGE_API_KEY:-}
       - CURRENCY_LAYER_API_KEY1=${CURRENCY_LAYER_API_KEY1:-}
@@ -15,9 +21,71 @@ services:
       - USE_CRAWL4AI=${USE_CRAWL4AI:-true}
       - GOOGLE_SEARCH_API_KEY=${GOOGLE_SEARCH_API_KEY:-}
       - GOOGLE_SEARCH_ENGINE_ID=${GOOGLE_SEARCH_ENGINE_ID:-}
+      # Security settings
+      - SECRET_KEY=${SECRET_KEY:-}
+      - WTF_CSRF_SECRET_KEY=${WTF_CSRF_SECRET_KEY:-}
+      # Application settings
+      - LOG_LEVEL=INFO
+      - MAX_DATA_POINTS=10000
+      - CACHE_TTL_HOURS=24
+      - AI_REQUEST_TIMEOUT=30
+      - MAX_AI_RETRIES=3
     volumes:
-      - ./app/data:/app/app/data
-      - ./app/reports:/app/app/reports
-      - ./app.log:/app/app.log
+      - ./app/data:/app/app/data:rw
+      - ./app/reports:/app/app/reports:rw
+      - ./logs:/app/logs:rw
+    networks:
+      - trading-network
     restart: unless-stopped
-    command: ["python", "app.py", "both"]
+    # Resource limits for security and stability
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    read_only: false
+    tmpfs:
+      - /tmp:noexec,nosuid,size=100m
+
+  # Optional: Add a reverse proxy for additional security
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/ssl/certs:ro
+    networks:
+      - trading-network
+    depends_on:
+      - trading-app
+    restart: unless-stopped
+    profiles:
+      - production
+
+networks:
+  trading-network:
+    driver: bridge
+    internal: false
+
+volumes:
+  app-data:
+    driver: local
+  app-reports:
+    driver: local
+  app-logs:
+    driver: local

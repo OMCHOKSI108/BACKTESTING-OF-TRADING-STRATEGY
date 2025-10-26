@@ -7,6 +7,7 @@ import json
 import logging
 import re
 from typing import Dict, Any, Optional
+import bleach
 import html
 
 # Configure logging
@@ -80,12 +81,27 @@ def validate_market_type(market_type: str) -> bool:
 
 def safe_markdown(content: str, **kwargs) -> None:
     """Safe markdown rendering with HTML sanitization"""
-    if 'unsafe_allow_html' in kwargs and kwargs['unsafe_allow_html']:
-        # Only allow specific safe HTML elements
-        safe_content = sanitize_html(content)
-        st.markdown(safe_content, **kwargs)
+    if not isinstance(content, str):
+        content = str(content)
+
+    # Remove any unsafe_allow_html from kwargs for security
+    safe_kwargs = {k: v for k, v in kwargs.items() if k != 'unsafe_allow_html'}
+
+    # Use bleach to clean any HTML content
+    clean_content = bleach.clean(content, tags=['b', 'i', 'em', 'strong', 'code', 'pre'], strip=True)
+
+    st.markdown(clean_content, **safe_kwargs)
+
+def safe_write(content: Any) -> None:
+    """Safe content writing with sanitization"""
+    if isinstance(content, str):
+        # Clean any HTML and limit length
+        clean_content = bleach.clean(content, tags=[], strip=True)
+        if len(clean_content) > 10000:  # Limit output length
+            clean_content = clean_content[:10000] + "..."
+        st.write(clean_content)
     else:
-        st.markdown(content, **kwargs)
+        st.write(content)
 
 def make_api_call(endpoint: str, method: str = "GET", data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Make API call with error handling and logging"""
