@@ -25,3 +25,7 @@ black
 pytest-asyncio
 lightgbm
 beautifulsoup4
+# Security enhancements
+bleach>=6.0.0
+cryptography>=41.0.0
+PyJWT>=2.8.0
