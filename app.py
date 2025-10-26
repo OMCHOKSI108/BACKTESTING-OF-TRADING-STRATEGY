@@ -51,7 +51,7 @@ def run_both():
 
     # Start Flask in background
     flask_process = subprocess.Popen([
-        sys.executable, "-m", "flask", "run", "--host=0.0.0.0", "--port=5000"
+        sys.executable, "-m", "flask", "run", "--host=0.0.0.0", "--port=3000"
     ], cwd=os.path.dirname(__file__), env={**os.environ, "FLASK_APP": "app"})
 
     # Wait a moment for Flask to start
