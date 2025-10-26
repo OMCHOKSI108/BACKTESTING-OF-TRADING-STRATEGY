@@ -29,5 +29,9 @@ EXPOSE 3000 8501
 ENV FLASK_APP=app
 ENV FLASK_ENV=production
 
+# Create non-root user
+RUN useradd --create-home --shell /bin/bash appuser && chown -R appuser:appuser /app
+USER appuser
+
 # Default command: run both Flask and Streamlit (can be overridden by docker-compose)
 CMD ["python", "app.py", "both"]
