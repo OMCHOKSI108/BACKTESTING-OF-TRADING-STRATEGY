@@ -43,9 +43,6 @@ class AIAgentService:
             # Step 2: Generate AI analysis
             analysis = self._generate_ai_analysis(query, web_data)
 
-            # Step 2: Generate AI analysis
-            analysis = self._generate_ai_analysis(query, web_data)
-
             # Step 3: Structure the response
             result = {
                 "success": True,
