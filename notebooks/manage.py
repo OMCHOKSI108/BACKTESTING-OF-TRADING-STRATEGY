@@ -26,8 +26,8 @@ except Exception:
 # ---------------------------
 # Config - update these
 # ---------------------------
-DHAN_CLIENT_ID = "2510263737"
-DHAN_ACCESS_TOKEN = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbkNvbnN1bWVyVHlwZSI6IlNFTEYiLCJwYXJ0bmVySWQiOiIiLCJkaGFuQ2xpZW50SWQiOiIyNTEwMjYzNzM3Iiwid2ViaG9va1VybCI6IiIsImlzcyI6ImRoYW4iLCJleHAiOjE3NjIwOTg1Mzh9.g6vF-b4N6QQAuejhoKudaMoVKZIOXKzkCEdWTQ9NDiAayYijaZIpem1Rr1RK0QXOb-duPDkhvDy2aluLFsiPhg"  # <-- replace
+DHAN_CLIENT_ID = os.environ.get('DHAN_CLIENT_ID', 'YOUR_CLIENT_ID_HERE')
+DHAN_ACCESS_TOKEN = os.environ.get('DHAN_ACCESS_TOKEN', 'YOUR_ACCESS_TOKEN_HERE')
 TARGET_DATE = "2024-01-17"
 STOCK_NAME = "BANKNIFTY"
 
