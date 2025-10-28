@@ -550,9 +550,16 @@ class AdvancedCryptoForexDataService:
         symbol = symbol.upper().strip()
 
         if market_type == "Crypto":
-            # Remove common suffixes and normalize
-            symbol = symbol.replace("USD", "").replace("USDT", "").replace("BTC", "")
-            symbol = symbol.replace("-", "").replace("_", "")
+            # Normalize crypto symbols: strip common quote currencies (USD, USDT)
+            s = symbol
+            # Prefer removing USDT first (commonly used), then USD
+            if s.endswith("USDT"):
+                s = s[:-4]
+            elif s.endswith("USD"):
+                s = s[:-3]
+            # Remove separators
+            s = s.replace("-", "").replace("_", "")
+            symbol = s
 
         elif market_type == "Forex":
             # Normalize forex pairs

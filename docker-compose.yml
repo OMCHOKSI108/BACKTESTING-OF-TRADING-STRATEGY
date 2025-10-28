@@ -77,6 +77,22 @@ services:
     profiles:
       - production
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NODE_ENV=production
+    ports:
+      - "3000:3000" # Next.js frontend
+    environment:
+      - NEXT_PUBLIC_API_BASE_URL=http://trading-app:8000
+    depends_on:
+      - trading-app
+    networks:
+      - trading-network
+    restart: unless-stopped
+
 networks:
   trading-network:
     driver: bridge

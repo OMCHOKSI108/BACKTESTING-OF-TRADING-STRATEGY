@@ -25,6 +25,8 @@ black
 pytest-asyncio
 lightgbm
 beautifulsoup4
+# Redis client (optional cache backend)
+redis>=4.5.0
 # Security enhancements
 bleach>=6.0.0
 cryptography>=41.0.0

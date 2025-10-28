@@ -52,11 +52,18 @@ def create_app(config_name=None):
     # Initialize extensions
     CORS(app, origins=app.config['CORS_ORIGINS'], supports_credentials=True)
 
-    limiter = Limiter(
-        app=app,
-        key_func=get_remote_address,
-        default_limits=["100 per day", "20 per hour", "5 per minute"]
-    )
+    # Prefer Redis-backed storage for rate-limiting when available
+    redis_url = os.environ.get('REDIS_URL')
+    limiter_kwargs = dict(key_func=get_remote_address, default_limits=["100 per day", "20 per hour", "5 per minute"]) 
+    if redis_url:
+        # Only enable Redis storage if the redis client dependency is available
+        try:
+            import redis as _redis_check  # noqa: F401
+            limiter_kwargs['storage_uri'] = redis_url
+        except Exception:
+            app.logger.warning("REDIS_URL is set but 'redis' package is not installed - falling back to in-memory limiter storage")
+
+    limiter = Limiter(app=app, **limiter_kwargs)
 
     # Security headers (only in production, but don't force HTTPS in containers)
     if os.environ.get('FLASK_ENV') == 'production':
@@ -100,11 +107,35 @@ def create_app(config_name=None):
     @app.route('/health')
     @limiter.exempt
     def health_check():
-        return jsonify({
+        payload = {
             'status': 'healthy',
             'timestamp': time.time(),
             'version': '1.0.0'
-        })
+        }
+        # If Redis configured, check connectivity
+        redis_url = os.environ.get('REDIS_URL')
+        if redis_url:
+            try:
+                import redis as redis_lib
+                r = redis_lib.from_url(redis_url, socket_connect_timeout=2)
+                pong = r.ping()
+                payload['redis'] = 'ok' if pong else 'unreachable'
+            except Exception as e:
+                payload['redis'] = f'error: {str(e)}'
+
+        return jsonify(payload)
+
+    @app.route('/health/redis')
+    @limiter.exempt
+    def health_redis():
+        # Detailed redis health using cache module when available
+        try:
+            from app.services import cache as _cache
+
+            info = _cache.cache_redis_health()
+            return jsonify({"redis": info})
+        except Exception as e:
+            return jsonify({"redis": {"enabled": False, "error": str(e)}}), 500
 
     # Register blueprints with rate limiting
     from app.routes.main import main_bp

@@ -437,3 +437,93 @@ class ReportService:
         except Exception as e:
             logger.error(f"Error creating strategy comparison report: {str(e)}")
             return None
+
+    def create_ai_research_report(self, research_result: dict, title: str = None) -> str:
+        """
+        Create a simple PDF report for AI research summaries with provenance.
+
+        Args:
+            research_result: Dictionary returned from search_and_cite (summary, sources, evidence)
+            title: Optional title for the report
+
+        Returns:
+            str: Path to generated PDF file
+        """
+        try:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            safe_title = (title or research_result.get("query", "research")).replace(" ", "_")
+            filename = f"ai_research_{safe_title}_{timestamp}.pdf"
+            filepath = os.path.join(self.reports_path, filename)
+
+            doc = SimpleDocTemplate(filepath, pagesize=A4)
+            styles = getSampleStyleSheet()
+            story = []
+
+            # Title
+            title_style = ParagraphStyle(
+                "CustomTitle",
+                parent=styles["Heading1"],
+                fontSize=16,
+                spaceAfter=20,
+                alignment=1,
+            )
+            report_title = title or f"AI Research - {research_result.get('query', '')}"
+            story.append(Paragraph(report_title, title_style))
+            story.append(Spacer(1, 12))
+
+            # Metadata
+            meta_style = ParagraphStyle("Meta", parent=styles["Normal"], fontSize=9, textColor=colors.gray)
+            meta_text = f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}<br/>"
+            meta_text += f"Sources: {len(research_result.get('sources', []))}"
+            story.append(Paragraph(meta_text, meta_style))
+            story.append(Spacer(1, 12))
+
+            # Summary bullets
+            story.append(Paragraph("Summary", styles["Heading2"]))
+            story.append(Spacer(1, 8))
+            summary_lines = research_result.get("summary", [])
+            if isinstance(summary_lines, str):
+                summary_lines = [summary_lines]
+
+            for line in summary_lines:
+                story.append(Paragraph(f"- {line}", styles["Normal"]))
+                story.append(Spacer(1, 6))
+
+            story.append(Spacer(1, 12))
+
+            # Sources table
+            story.append(Paragraph("Sources & Excerpts", styles["Heading2"]))
+            story.append(Spacer(1, 8))
+
+            sources = research_result.get("sources", [])
+            if sources:
+                table_data = [["#", "Title", "Source", "Publish Date", "Excerpt"]]
+                for idx, s in enumerate(sources, 1):
+                    excerpt = s.get("excerpt") or s.get("snippet") or ""
+                    title = s.get("title") or s.get("url")
+                    domain = s.get("domain") or ""
+                    publish_date = s.get("publish_date") or ""
+                    table_data.append([str(idx), title, domain, publish_date, excerpt[:300]])
+
+                table = Table(table_data, colWidths=[30, 150, 100, 70, 160])
+                table.setStyle(
+                    TableStyle(
+                        [
+                            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                            ("ALIGN", (0, 0), (-1, -1), "LEFT"),
+                            ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                            ("FONTSIZE", (0, 0), (-1, 0), 10),
+                            ("BOTTOMPADDING", (0, 0), (-1, 0), 8),
+                            ("GRID", (0, 0), (-1, -1), 0.5, colors.black),
+                        ]
+                    )
+                )
+                story.append(table)
+
+            doc.build(story)
+            logger.info(f"AI research PDF generated: {filepath}")
+            return filepath
+        except Exception as e:
+            logger.error(f"Error creating AI research PDF: {str(e)}")
+            return None

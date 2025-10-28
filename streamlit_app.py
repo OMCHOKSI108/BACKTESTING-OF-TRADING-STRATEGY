@@ -27,10 +27,10 @@ MAX_QUERY_LENGTH = 500
 ALLOWED_TIMEFRAMES = ["1m", "5m", "15m", "30m", "1h", "4h", "1d", "1w", "1mo"]
 ALLOWED_MARKET_TYPES = ["US Stocks", "Indian Stocks", "Forex", "Crypto"]
 
-# Configure page with Perplexity-style settings
+# Configure page with elegant modern settings
 st.set_page_config(
-    page_title="Trading Strategy Backtester",
-    page_icon="⚡",
+    page_title="Trading Strategy Backtester | AI-Powered Analysis",
+    page_icon="📈",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -149,6 +149,273 @@ def main():
     """Main application function with security enhancements"""
     logger.info("Starting Trading Strategy Backtester application")
 
+    # Add elegant custom CSS styling
+    st.markdown("""
+    <style>
+        /* Light / Whiteish Professional Color Scheme */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #e6f0ff 0%, #ffffff 100%);
+            --success-gradient: linear-gradient(135deg, #e9f7ef 0%, #f0fff6 100%);
+            --danger-gradient: linear-gradient(135deg, #fff5f5 0%, #fffaf0 100%);
+            --info-gradient: linear-gradient(135deg, #eef6ff 0%, #f8feff 100%);
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-primary: #0b2545;
+            --text-secondary: #556676;
+            --accent-blue: #2b7cff;
+            --accent-purple: #6b8cff;
+            --muted: #9aa8b2;
+        }
+
+        /* Main Background */
+        .stApp {
+            background: var(--bg-color);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+        }
+        
+        /* Elegant Header Styling */
+        .perplexity-header {
+            background: var(--card-bg);
+            padding: 2rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+            margin-bottom: 1.25rem;
+            text-align: center;
+            animation: fadeInDown 0.6s ease-in-out;
+            border: 1px solid rgba(11, 37, 69, 0.04);
+        }
+
+        .perplexity-header h1 {
+            color: var(--text-primary);
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .perplexity-header p {
+            color: var(--muted);
+            font-size: 1rem;
+            margin-top: 0.4rem;
+            font-weight: 400;
+        }
+        
+        /* Search Container */
+        .search-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid rgba(11, 37, 69, 0.04);
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
+        }
+        
+        /* Card Styling */
+        .info-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 0.8rem 0;
+            border: 1px solid rgba(11, 37, 69, 0.04);
+            box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* AI Response Card */
+        .ai-response {
+            background: #fbfdff;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.8rem 0;
+            border-left: 4px solid var(--accent-blue);
+            box-shadow: 0 6px 18px rgba(43, 124, 255, 0.06);
+        }
+        
+        /* User Query Card */
+        .user-query {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 0.85rem;
+            margin: 0.8rem 0;
+            border-left: 4px solid #2b7cff;
+            box-shadow: 0 6px 14px rgba(11, 37, 69, 0.03);
+        }
+        
+        /* Button Styling */
+        .stButton > button {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1.1rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.18s ease;
+            box-shadow: 0 6px 18px rgba(43, 124, 255, 0.12);
+        }
+        
+        .stButton > button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+        }
+        
+        /* Input Field Styling */
+        .stTextInput > div > div > input,
+        .stTextArea > div > div > textarea {
+            background: #fbfdff;
+            border: 1px solid rgba(11, 37, 69, 0.06);
+            border-radius: 8px;
+            color: var(--text-primary);
+            padding: 0.75rem;
+            font-size: 0.95rem;
+            transition: all 0.18s ease;
+        }
+        
+        .stTextInput > div > div > input:focus,
+        .stTextArea > div > div > textarea:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 26px rgba(43, 124, 255, 0.06);
+            background: #ffffff;
+        }
+        
+        /* Selectbox Styling */
+        .stSelectbox > div > div {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+        }
+        
+        /* Expander Styling */
+        .streamlit-expanderHeader {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        /* Metrics Display */
+        .metric-container {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.2) 0%, rgba(56, 239, 125, 0.2) 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(56, 239, 125, 0.3);
+            box-shadow: 0 4px 15px rgba(17, 153, 142, 0.2);
+        }
+        
+        /* Spinner Animation */
+        .stSpinner > div {
+            border-top-color: var(--accent-purple) !important;
+        }
+        
+        /* Success/Error Messages */
+        .stSuccess {
+            background: var(--success-gradient);
+            color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            font-weight: 500;
+        }
+        
+        .stError {
+            background: var(--danger-gradient);
+            color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            font-weight: 500;
+        }
+        
+        .stInfo {
+            background: var(--info-gradient);
+            color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            font-weight: 500;
+        }
+        
+        /* Sidebar Styling */
+        section[data-testid="stSidebar"] {
+            background: #ffffff;
+            border-right: 1px solid rgba(11, 37, 69, 0.04);
+            padding-top: 1rem;
+        }
+        
+        section[data-testid="stSidebar"] .stButton > button {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        section[data-testid="stSidebar"] .stButton > button[kind="primary"] {
+            background: var(--primary-gradient);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 1.25rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(11, 37, 69, 0.04);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Responsive Typography */
+    h1 { color: var(--text-primary); font-weight: 700; }
+    h2 { color: var(--text-primary); font-weight: 600; }
+    h3 { color: var(--text-primary); font-weight: 600; }
+    p { color: var(--text-secondary); line-height: 1.6; }
+        
+        /* Data Table Styling */
+        .dataframe {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-purple);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-blue);
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
     # Initialize session state
     if 'current_view' not in st.session_state:
         st.session_state.current_view = 'home'
@@ -227,12 +494,12 @@ def main():
     """, unsafe_allow_html=True)
 
 def render_home_page():
-    """Render home page with security validations"""
-    # Header
+    """Render home page with security validations and elegant design"""
+    # Header with modern gradient design
     st.markdown("""
     <div class="perplexity-header">
-        <h1>⚡ Trading Strategy Backtester</h1>
-        <p>Advanced market analysis powered by AI and real-time data</p>
+        <h1>📈 Trading Strategy Backtester</h1>
+        <p>Advanced quantitative analysis powered by AI and real-time market data</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -518,12 +785,12 @@ def render_results_page():
         st.info("No results available. Run a strategy first.")
 
 def render_ai_page():
-    """Render AI agent page with enhanced security"""
-    # AI Agent interface (Perplexity-style)
+    """Render AI agent page with enhanced security and elegant design"""
+    # AI Agent interface with modern elegant header
     st.markdown("""
     <div class="perplexity-header">
         <h1>🤖 AI Financial Analyst</h1>
-        <p>Advanced market research powered by AI and real-time data</p>
+        <p>Professional market research powered by advanced AI and real-time financial data</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -531,37 +798,147 @@ def render_ai_page():
     if 'ai_chat_history' not in st.session_state:
         st.session_state.ai_chat_history = []
 
-    # Chat History with sanitization
+    # Chat History with enhanced styling
     if st.session_state.ai_chat_history:
         st.markdown("### 💬 Research History")
         for i, message in enumerate(st.session_state.ai_chat_history):
             if message['role'] == 'user':
                 safe_content = sanitize_html(message.get('content', ''))
                 st.markdown(f"""
-                <div style="background: #e3f2fd; padding: 1rem; border-radius: 10px; margin: 0.5rem 0; border-left: 4px solid #2196f3;">
-                    <strong>👤 Your Question:</strong><br>{safe_content}
+                <div class="user-query">
+                    <strong>👤 Your Question:</strong><br>
+                    <p style="margin-top: 0.5rem; font-size: 1.05rem;">{safe_content}</p>
                 </div>
                 """, unsafe_allow_html=True)
             else:
-                with st.expander(f"🤖 AI Analysis #{i//2 + 1}", expanded=False):
+                with st.expander(f"🤖 AI Analysis #{i//2 + 1} - {message.get('timestamp', '')}", expanded=False):
                     safe_content = sanitize_html(message.get('content', ''))
-                    st.markdown(safe_content)
+                    st.markdown(f'<div class="ai-response">{safe_content}</div>', unsafe_allow_html=True)
 
-    # Input Section with validation
+    # If a recent result exists, show structured sources and provenance
+    if 'last_ai_result' in st.session_state and st.session_state.last_ai_result:
+        res = st.session_state.last_ai_result
+        st.markdown("### 🧾 Latest Research Summary")
+        bullets = res.get('summary', [])
+        for b in bullets:
+            st.markdown(f"- {sanitize_html(b)}")
+
+        st.markdown("### 🔎 Sources & Evidence")
+        sources_list = res.get('sources') or []
+        # Render each source with an include checkbox so user can resummarize from a subset
+        for i, s in enumerate(sources_list):
+            title = sanitize_html(s.get('title') or s.get('url'))
+            domain = sanitize_html(s.get('domain', ''))
+            publish = sanitize_html(s.get('publish_date') or s.get('scrape_timestamp') or '')
+            score = s.get('relevance_score', 0)
+
+            # checkbox + expander in a two-column layout
+            col_check, col_content = st.columns([0.5, 11])
+            include_key = f"include_source_{i}"
+            # default include True
+            try:
+                default_include = True
+            except Exception:
+                default_include = True
+
+            with col_check:
+                included = st.checkbox("", value=default_include, key=include_key)
+
+            with col_content.expander(f"{title} — {domain} — score: {score}"):
+                st.markdown(f"**Source:** [{title}]({s.get('url')})")
+                excerpt = s.get('main_text') or (s.get('excerpts') and s.get('excerpts')[0]) or s.get('snippet')
+                if excerpt:
+                    st.write(sanitize_html(excerpt))
+                # show raw json for provenance
+                st.json(s)
+
+        # Regenerate summary button
+        if sources_list:
+            if st.button("🔁 Regenerate summary using selected sources"):
+                # Gather selected sources
+                selected = []
+                for i, s in enumerate(sources_list):
+                    key = f"include_source_{i}"
+                    if st.session_state.get(key, True):
+                        # only send relevant fields to the server
+                        selected.append({
+                            'url': s.get('url'),
+                            'title': s.get('title'),
+                            'domain': s.get('domain'),
+                            'publish_date': s.get('publish_date') or s.get('scrape_timestamp'),
+                            'excerpts': s.get('excerpts') or [],
+                            'main_text': s.get('main_text')
+                        })
+
+                if not selected:
+                    st.warning("Select at least one source to regenerate the summary.")
+                else:
+                    payload = {"query": res.get('query'), "sources": selected}
+                    with st.spinner("Regenerating summary from selected sources..."):
+                        summary_res = make_api_call("/api/ai/resummarize", method="POST", data=payload)
+                        if summary_res and summary_res.get('success'):
+                            # Replace last result with new summary
+                            st.session_state.last_ai_result = summary_res
+                            st.success("✅ Regenerated summary successfully.")
+                            st.rerun()
+                        else:
+                            err = summary_res.get('error') if summary_res else 'Resummarization failed'
+                            st.error(f"❌ {err}")
+
+        # Export PDF report for the AI research
+        if st.button("💾 Export PDF Report") and res:
+            with st.spinner("Generating PDF report..."):
+                payload = {"research": res, "title": f"AI Research - {res.get('query', '')}"}
+                rpt = make_api_call("/api/report/generate_ai", method="POST", data=payload)
+                if rpt and rpt.get("success"):
+                    download_url = rpt.get("download_url")
+                    st.success("✅ PDF report generated")
+                    # Show download link (relative to API base)
+                    full_url = f"{DISPLAY_API_BASE}{download_url}"
+                    st.markdown(f"[Download PDF report]({full_url})")
+                else:
+                    st.error(f"Failed to generate PDF: {rpt.get('error') if rpt else 'Unknown error'}")
+
+
+    # Input Section with elegant design
     st.markdown("### 🔍 Ask Your Financial Question")
+    
+    st.markdown("""
+    <div class="info-card">
+        <p style="margin: 0; color: var(--text-primary);">
+            <strong>📊 Example Queries:</strong> 
+            "Analyze EUR/USD technical trends" • "What are Bitcoin's key resistance levels?" • 
+            "Evaluate S&P 500 market conditions" • "Assess gold price outlook"
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
     with st.form("ai_form"):
         user_query_input = st.text_area(
             "",
-            placeholder="e.g., 'What are the current market trends for EURUSD?', 'Analyze Bitcoin's technical indicators'",
-            height=80,
+            placeholder="Enter your financial analysis question here... (e.g., 'What are the current market trends for EUR/USD?')",
+            height=100,
             label_visibility="collapsed",
             max_chars=MAX_QUERY_LENGTH
         )
 
-        max_results = st.selectbox("Research Depth", [3, 5, 7, 10], index=1)
+        col1, col2 = st.columns([2, 1])
+        with col1:
+            max_results = st.selectbox(
+                "Research Depth", 
+                [3, 5, 7, 10], 
+                index=1,
+                help="Number of data sources to analyze"
+            )
 
-        if st.form_submit_button("🚀 Analyze Markets", use_container_width=True):
+            start_date = st.date_input("Start date (optional)", value=None)
+            end_date = st.date_input("End date (optional)", value=None)
+            sources = st.multiselect("Sources to include", ["web", "news"], default=["web", "news"]) 
+        
+        with col2:
+            submit_button = st.form_submit_button("🚀 Analyze Markets", use_container_width=True)
+
+        if submit_button:
             if validate_query(user_query_input) and user_query_input.strip():
                 # Add to chat history with sanitization
                 safe_query = sanitize_html(user_query_input.strip())
@@ -571,63 +948,78 @@ def render_ai_page():
                     'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 })
 
-                # Loading animation
-                with st.spinner("AI Analyst is researching..."):
+                # Professional loading animation
+                with st.spinner("🔍 AI Analyst is researching financial markets..."):
                     time.sleep(2)  # Simulate processing
 
                     research_payload = {
                         "query": safe_query,
-                        "max_results": max_results
+                        "max_results": max_results,
+                        "start_date": str(start_date) if start_date else None,
+                        "end_date": str(end_date) if end_date else None,
+                        "sources": sources
                     }
 
-                    result = make_api_call("/api/ai/research", method="POST", data=research_payload)
+                    result = make_api_call("/api/ai/search_and_cite", method="POST", data=research_payload)
 
                     if result and result.get("success"):
-                        ai_response = result.get("analysis", {})
+                        # Save last result to session for rendering sources/summary
+                        st.session_state.last_ai_result = result
 
-                        # Format response with sanitization
+                        # Build a human-readable summary content
+                        summary = result.get("summary", [])
+                        summary_md = "\n".join([f"- {sanitize_html(s)}" for s in summary])
+
                         response_content = f"""
-**Market Overview:** {sanitize_html(ai_response.get('market_overview', 'Analysis generated'))}
-
-**Key Factors:**
+<div style=\"line-height:1.8;\">\n
+### ✅ Top Summary\n
+{summary_md}\n
+### � Top Sources\n
 """
-                        for factor in ai_response.get('key_factors', []):
-                            response_content += f"• {sanitize_html(str(factor))}\n"
+                        # Add a compact list of top sources
+                        for s in (result.get("sources") or [])[:5]:
+                            title = sanitize_html(s.get('title') or s.get('url'))
+                            domain = sanitize_html(s.get('domain', ''))
+                            score = s.get('relevance_score', 0)
+                            response_content += f"- {title} ({domain}) — score: {score}\n"
 
-                        response_content += f"""
-**Technical Analysis:** {sanitize_html(ai_response.get('technical_analysis', 'N/A'))}
+                        response_content += "\n</div>"
 
-**Risk Assessment:** {sanitize_html(ai_response.get('risk_assessment', 'N/A'))}
-
-**Market Outlook:** {sanitize_html(ai_response.get('outlook', 'N/A'))}
-
-**Confidence:** {sanitize_html(ai_response.get('confidence_level', 'Medium'))}
-"""
-
-                        # Add AI response to history
                         st.session_state.ai_chat_history.append({
                             'role': 'assistant',
                             'content': response_content,
                             'timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                         })
 
-                        st.success("✅ Analysis completed!")
-                        logger.info(f"AI analysis completed for query: {safe_query[:50]}...")
+                        st.success("✅ Market analysis completed successfully!")
+                        logger.info(f"AI search_and_cite completed for query: {safe_query[:50]}...")
                         st.rerun()
                     else:
                         error_msg = result.get("error", "Analysis failed") if result else "Failed to connect to AI service"
                         st.error(f"❌ {error_msg}")
                         logger.error(f"AI analysis failed: {error_msg}")
             else:
-                st.error("❌ Invalid query. Please enter a valid question.")
+                st.error("❌ Invalid query. Please enter a valid financial question.")
 
-    # Clear history
+    # Clear history with elegant button
     if st.session_state.ai_chat_history:
-        if st.button("🗑️ Clear History"):
-            st.session_state.ai_chat_history = []
-            st.success("History cleared!")
-            logger.info("AI chat history cleared")
-            st.rerun()
+        col1, col2, col3 = st.columns([2, 1, 2])
+        with col2:
+            if st.button("🗑️ Clear History", use_container_width=True):
+                st.session_state.ai_chat_history = []
+                st.success("✨ History cleared successfully!")
+                logger.info("AI chat history cleared")
+                st.rerun()
+    
+    # Disclaimer footer
+    st.markdown("""
+    <div class="info-card" style="margin-top: 2rem;">
+        <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary); text-align: center;">
+            ⚠️ <strong>Disclaimer:</strong> This AI-powered analysis is for informational and educational purposes only. 
+            Not financial advice. Always consult with qualified financial advisors before making investment decisions.
+        </p>
+    </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()

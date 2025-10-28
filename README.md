@@ -63,487 +63,125 @@ A comprehensive web application for backtesting trading strategies across multip
 
 ### EUR/USD Forex Trading Strategy Performance
 
-![EUR/USD Trading Performance](notebooks/assets/EURUSD.png)
+# Trading Strategy Backtester — Developer README
 
-*EMA Crossover Strategy with ATR Volatility Filter on EUR/USD (1h timeframe, 2023-2025)*
-
-**Performance Metrics:**
-- **Total Return**: -2.49%
-- **Win Rate**: 34.03%
-- **Sharpe Ratio**: -0.28
-- **Max Drawdown**: 9.36%
-- **Strategy**: EMA Crossover (20/50) with ATR Filter
-- **Timeframe**: 1-hour candles
-- **Period**: ~2 years of historical data
-
-### XAU/USD Gold Trading Strategy Performance
-
-![XAU/USD Trading Performance](notebooks/assets/XAUUSD.png)
-
-*EMA Crossover Strategy with ATR Volatility Filter on XAU/USD (1h timeframe, 2023-2025)*
-
-**Performance Metrics:**
-- **Total Return**: +71.48%
-- **Win Rate**: 45.55%
-- **Sharpe Ratio**: 3.18
-- **Max Drawdown**: 6.01%
-- **Strategy**: EMA Crossover (20/50) with ATR Filter
-- **Timeframe**: 1-hour candles
-- **Period**: ~2 years of historical data
-
-### Strategy Analysis
-
-The backtesting results demonstrate significant performance differences between EUR/USD and XAU/USD markets using the same EMA crossover strategy with ATR volatility filtering:
-
-- **XAU/USD outperformed EUR/USD** with a 71.48% total return vs -2.49% loss
-- **Risk-adjusted returns** show XAU/USD with a Sharpe ratio of 3.18 vs EUR/USD's -0.28
-- **Drawdown management** was better for XAU/USD (6.01% max drawdown vs 9.36%)
-- **Win rates** were comparable at 45.55% for XAU/USD vs 34.03% for EUR/USD
-
-These results highlight the importance of market-specific strategy optimization and the potential of gold (XAU/USD) as a strong performer in algorithmic trading strategies.
-
-## Architecture
-
-```
-trading-backtester/
-├── app/
-│   ├── strategies/          # Trading strategy implementations
-│   │   ├── strategy1.py     # SMA Crossover Strategy
-│   │   ├── strategy2.py     # RSI Mean Reversion Strategy
-│   │   ├── strategy3.py     # Bollinger Bands Strategy
-│   │   ├── strategy4.py     # MACD Crossover Strategy
-│   │   └── strategy5.py     # Multi-Indicator Strategy
-│   ├── services/            # Core business logic
-│   │   ├── data_service.py  # Multi-API data fetching with caching
-│   │   ├── backtest_service.py # Strategy execution and metrics calculation
-│   │   ├── report_service.py # PDF report generation
-│   │   ├── ai_agent_service.py # AI agent for financial research
-│   │   └── crypto_forex_data_service.py # Advanced forex data handling
-│   ├── routes/              # API endpoints
-│   │   ├── data_routes.py   # Data gathering and management APIs
-│   │   ├── strategy_routes.py # Strategy execution APIs
-│   │   ├── report_routes.py # Report generation APIs
-│   │   ├── ai_routes.py     # AI agent API endpoints
-│   │   └── performance_routes.py # System monitoring APIs
-│   ├── static/charts/       # Generated chart images
-│   ├── templates/           # HTML templates (legacy)
-│   ├── data/                # Data storage
-│   │   ├── raw/            # Raw API response data
-│   │   ├── processed/      # Cleaned and standardized data
-│   │   └── trade_history/  # Detailed trade execution logs
-│   └── reports/            # Generated PDF reports
-├── streamlit_app.py         # Modern Streamlit frontend with AI chatbot
-├── app.py                   # Flask application entry point
-├── requirements.txt         # Python dependencies
-├── Dockerfile              # Container configuration
-├── docker-compose.yml      # Multi-service orchestration
-└── README.md
-```
-
-## Technical Insights
-
-### Data Pipeline Architecture
-
-The system implements a sophisticated multi-layer data pipeline:
-
-1. **Data Acquisition Layer**
-   - Yahoo Finance: Primary source with automatic fallback
-   - Finnhub API: Alternative forex and global market data
-   - Alpha Vantage: Supplementary data validation
-   - Currency Layer: Real-time forex rates
-
-2. **Data Processing Layer**
-   - Standardization: All data normalized to OHLCV format
-   - MultiIndex Handling: Complex column structures flattened
-   - Caching Strategy: SQLite-based with TTL and market-specific bypass
-   - Error Recovery: Automatic retry with exponential backoff
-
-3. **Strategy Execution Engine**
-   - Concurrent Processing: Multi-threaded backtesting
-   - Memory Optimization: Pandas DataFrame operations
-   - Position Tracking: Real-time portfolio state management
-   - Risk Management: Configurable stop-loss and position sizing
-
-### Performance Optimizations
-
-- **Caching Layer**: Multi-level caching prevents redundant API calls
-- **Async Operations**: Concurrent data fetching improves response times
-- **Memory Management**: DataFrame chunking for large datasets
-- **Database Indexing**: Optimized SQLite queries for historical data
-
-### API Design Patterns
-
-- **Blueprint Architecture**: Modular Flask routing with URL prefixes
-- **RESTful Endpoints**: Consistent HTTP method usage
-- **Service Layer Pattern**: Separation of business logic from API endpoints
-- **Error Handling**: Comprehensive exception management with meaningful messages
-- **Rate Limiting**: Built-in protection against API quota exhaustion
-- **Response Standardization**: Consistent JSON response formats across all endpoints
-
-## Quick Start
-
-### Option 1: Docker (Recommended)
-
-```bash
-# Clone repository
-git clone https://github.com/OMCHOKSI108/BACKTESTING-OF-TRADING-STRATEGY.git
-cd BACKTESTING-OF-TRADING-STRATEGY
-
-# Copy environment file and add your API keys
-cp .env.example .env
-# Edit .env with your API keys
-
-# Start all services
-docker-compose up --build
-
-# Access the application
-# Frontend: http://localhost:8502
-# Backend API: http://localhost:8000
-```
-
-### Option 2: Local Development
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up environment variables (optional)
-cp .env.example .env
-# Edit .env with your API keys
-
-# Run Flask backend
-python app.py flask
-
-# Run Streamlit frontend (in another terminal)
-python app.py streamlit
-
-# Access the application
-# Frontend: http://localhost:8502
-# Backend API: http://localhost:8000
-```
-
-### Option 3: Direct Execution
-
-```bash
-# Run Streamlit app directly
-streamlit run streamlit_app.py
-
-# Run both services simultaneously
-python app.py both
-
-# Or run Flask app directly
-python -c "from app import create_app; app = create_app(); app.run(port=8000)"
-```
-
-## Usage Workflow
-
-1. **Select Market & Symbol**: Choose from Forex, Indian Stocks, or US Stocks
-2. **Configure Parameters**: Set timeframe, date range, and initial balance
-3. **Gather Data**: Click "Gather Data" to fetch and cache market data
-4. **Run Strategy**: Select from 5 professional strategies and execute backtest
-5. **Analyze Results**: Review performance metrics, charts, and trade history
-6. **Export Report**: Generate comprehensive PDF report with all findings
-7. **AI Research**: Use the AI Agent Chatbot for automated financial market research
-
-## AI Agent Chatbot
-
-The integrated AI Agent Chatbot provides automated financial market research and reporting capabilities:
-
-### Features
-
-- **Market Research**: Automatically research financial markets and gather insights from internet data
-- **Real-time Analysis**: Get up-to-date market information and trends
-- **Report Generation**: Generate comprehensive financial reports based on web data
-- **Interactive Chat**: Natural language interface for financial queries
-- **Data Sources**: Aggregates information from multiple financial news sources and APIs
-
-### Usage
-
-1. Navigate to the "AI Agent" tab in the Streamlit application
-2. Enter your financial research query (e.g., "Analyze current EURUSD trends", "Research AAPL stock performance")
-3. The AI agent will automatically search internet sources and generate a comprehensive report
-4. View and download the generated research reports
-
-### Example Queries
-
-- "What are the current market trends for gold and silver?"
-- "Analyze the impact of recent Fed decisions on stock markets"
-- "Research technical indicators for Bitcoin trading"
-- "Generate a report on emerging market opportunities"
-
-## API Endpoints
-
-### Data Management
-
-- `GET /api/data/status` - Check data availability
-- `POST /api/data/gather` - Fetch market data
-- `GET /api/data/symbols` - List available symbols
-
-### Strategy Execution
-
-- `POST /api/strategy/{id}/run` - Execute specific strategy
-- `GET /api/strategy/{id}/status` - Check execution status
-- `GET /api/strategy/{id}/results` - Retrieve results
-
-### AI Agent
-
-- `POST /api/ai/research` - Perform financial market research
-- `GET /api/ai/history` - Get research history
-- `POST /api/ai/report` - Generate research report
-
-### Reporting
-
-- `POST /api/report/generate` - Create PDF report
-- `GET /api/report/{id}/download` - Download generated report
-
-## Performance Metrics
-
-The system calculates comprehensive trading performance metrics:
-
-- **Profitability**: Net P&L, Gross Profit/Loss, Profit Factor
-- **Risk Metrics**: Max Drawdown, Sharpe Ratio, Sortino Ratio
-- **Trade Statistics**: Win Rate, Average Trade P&L, Total Trades
-- **Timing**: Average Trade Duration, Best/Worst Trade
-- **Portfolio**: Initial/Final Balance, Total Return %
-
-## Configuration
-
-### Environment Variables
-
-```bash
-# Financial Data APIs
-FINNHUB_API_KEY=your_finnhub_api_key_here
-ALPHA_VANTAGE_API_KEY=your_alpha_vantage_api_key_here
-
-# Currency Layer API Keys (for forex data)
-CURRENCY_LAYER_API_KEY1=f76a1f7cc3a0c38b25a0da6603973066
-CURRENCY_LAYER_API_KEY2=9f259d42951a0e4a22628af03045cde0
-CURRENCY_LAYER_API_KEY3=your_currency_layer_key3_here
-
-# AI Agent Configuration
-GEMINI_API_KEY=your_gemini_api_key_here
-USE_CRAWL4AI=true
-
-# Google Search API (alternative to web scraping)
-GOOGLE_SEARCH_API_KEY=your_google_search_api_key_here
-GOOGLE_SEARCH_ENGINE_ID=your_google_search_engine_id_here
-
-# Application Settings
-FLASK_ENV=development
-STREAMLIT_SERVER_PORT=8502
-DOCKER_ENV=true
-```
-
-### Strategy Parameters
-
-Each strategy supports customizable parameters:
-
-- **SMA Crossover**: Short/Long period windows
-- **RSI**: Overbought/Oversold levels, period
-- **Bollinger Bands**: Standard deviation multiplier, period
-- **MACD**: Fast/Slow/Signal periods
-- **Multi-Indicator**: Combined strategy weights
-
-## Development
-
-### Project Structure
-
-- `app/services/` - Business logic and data processing
-- `app/routes/` - API endpoint definitions
-- `app/strategies/` - Trading strategy implementations
-- `tests/` - Unit and integration tests
-
-### Adding New Strategies
-
-1. Create strategy file in `app/strategies/strategy6.py`
-2. Add API endpoint in `app/routes/strategies.py`
-3. Update frontend strategy selection
-
-### Testing
-
-```bash
-# Run all tests
-python -m pytest tests/
-
-# Run specific test
-python -m pytest tests/test_data_service.py
-```
-
-## Sample Results
-
-### Strategy Performance Comparison
-
-| Strategy | Win Rate | Profit Factor | Max Drawdown | Sharpe Ratio |
-|----------|----------|---------------|--------------|--------------|
-| SMA Crossover | 65.2% | 1.45 | 12.3% | 1.23 |
-| RSI Mean Reversion | 58.7% | 1.28 | 15.1% | 0.98 |
-| Bollinger Bands | 62.1% | 1.52 | 10.8% | 1.45 |
-| MACD Crossover | 59.3% | 1.35 | 13.7% | 1.12 |
-| Multi-Indicator | 67.8% | 1.68 | 9.2% | 1.67 |
-
-### Market Performance (RELIANCE.NS, 2024)
-
-- **Total Return**: +24.7%
-- **Annualized Return**: +31.2%
-- **Max Drawdown**: -8.4%
-- **Sharpe Ratio**: 1.89
-- **Total Trades**: 156
-- **Win Rate**: 68.5%
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-strategy`)
-3. Commit changes (`git commit -am 'Add new strategy'`)
-4. Push to branch (`git push origin feature/new-strategy`)
-5. Create Pull Request
-
-### Development Guidelines
-
-- Follow PEP 8 style guidelines
-- Add unit tests for new features
-- Update documentation for API changes
-- Ensure Docker compatibility
+Concise developer-oriented documentation for the backtester and research agent. This README focuses on getting a developer up and running, environment configuration for PRO features (SerpAPI / Google / Redis), and where to find key modules.
 
 ---
 
-**Built with ❤️ for quantitative traders and algorithmic strategists**
+## Quick overview
 
-- [Features](#features)
+- Backend: Flask application (blueprints under `app/routes/`).
+- Frontend: Streamlit UI (`streamlit_app.py`).
+- Services: `app/services/` contains `data_service`, `backtest_service`, `ai_agent_service`, `report_service`, and search adapters.
+- Persistence: local CSV data under `app/data/` and optional Redis for cross-process caching and limiter storage.
 
-- [Screenshots](#screenshots)
+Screenshots (kept here for convenience):
 
-- [Architecture](#architecture)## Table of Contents## Table of Contents
-
-- [Technical Insights](#technical-insights)
-
-- [Quick Start](#quick-start)
-
-- [Usage Workflow](#usage-workflow)
-
-- [AI Agent Chatbot](#ai-agent-chatbot)- [Features](#features)- [Features](#features)
-
-- [API Endpoints](#api-endpoints)
-
-- [Performance Metrics](#performance-metrics)- [Screenshots](#screenshots)- [Screenshots](#screenshots)
-
-- [Configuration](#configuration)
-
-- [Development](#development)- [Architecture](#architecture)- [Architecture](#architecture)
-
-- [Sample Results](#sample-results)
-
-- [Contributing](#contributing)- [Technical Insights](#technical-insights)- [Technical Insights](#technical-insights)
-
-
-
-## Features- [Quick Start](#quick-start)- [Quick Start](#quick-start)
-
-
-
-- Multi-market support: Forex, Indian Stocks (NSE), and US Stocks- [Usage Workflow](#usage-workflow)- [Usage Workflow](#usage-workflow)
-
-- Multiple timeframes: 1m, 5m, 15m, 30m, 1h, 4h, 1d, 1w, 1mo
-
-- Five professional trading strategies with customizable parameters- [API Endpoints](#api-endpoints)- [API Endpoints](#api-endpoints)
-
-- Comprehensive performance metrics including Sharpe Ratio, Sortino Ratio, and Max Drawdown
-
-- Multiple data sources: Yahoo Finance, Finnhub, Alpha Vantage- [Performance Metrics](#performance-metrics)- [Performance Metrics](#performance-metrics)
-
-- Interactive charts and equity curve visualization
-
-- Professional PDF report generation- [Configuration](#configuration)- [Configuration](#configuration)
-
-- Modern Streamlit dashboard with real-time progress
-
-- **AI Agent Chatbot**: Automated financial market research and internet data reporting- [Development](#development)- [Development](#development)
-
-- Modular Flask backend with RESTful API architecture
-
-- SQLite caching for improved performance- [Sample Results](#sample-results)- [Sample Results](#sample-results)
-
-- Docker containerization support
-
-- [Contributing](#contributing)- [Contributing](#contributing)
-
-## Screenshots
-
-
-
-### Application Dashboard
-
-## Features## Features
-
-![Trading Strategy Backtester Dashboard](assets/trades.png)
-
-
-
-*Main application interface showing strategy selection, market configuration, and data gathering controls.*
-
-- Multi-market support: Forex, Indian Stocks (NSE), and US Stocks- Multi-market support: Forex, Indian Stocks (NSE), and US Stocks
-
-### Performance Analytics
-
-- Multiple timeframes: 1m, 5m, 15m, 30m, 1h, 4h, 1d, 1w, 1mo- Multiple timeframes: 1m, 5m, 15m, 30m, 1h, 4h, 1d, 1w, 1mo
-
-![Performance Metrics](assets/performance.png)
-
-- Five professional trading strategies with customizable parameters- Five professional trading strategies with customizable parameters
-
-*Comprehensive performance metrics including Sharpe Ratio, Sortino Ratio, Max Drawdown, and equity curves.*
-
-- Comprehensive performance metrics including Sharpe Ratio, Sortino Ratio, and Max Drawdown- Comprehensive performance metrics including Sharpe Ratio, Sortino Ratio, and Max Drawdown
-
-### Trade History Analysis
-
-- Multiple data sources: Yahoo Finance, Finnhub, Alpha Vantage- Multiple data sources: Yahoo Finance, Finnhub, Alpha Vantage
-
+![Dashboard](assets/trades.png)
+![Performance](assets/performance.png)
 ![Trade History](assets/trade_history.png)
+![Docker](assets/docker.png)
 
-- Interactive charts and equity curve visualization- Interactive charts and equity curve visualization
+Notebook sample outputs:
+![EURUSD result](notebooks/assets/EURUSD.png)
+![XAUUSD result](notebooks/assets/XAUUSD.png)
 
-*Detailed trade history with P&L analysis, win/loss ratios, and trade timing information.*
+---
 
-- Professional PDF report generation- Professional PDF report generation
+## Quick start (developer)
 
-### Docker Deployment
+1) Create and edit `.env` (examples in `.env.example`). Add PRO keys if available.
 
-- Modern Streamlit dashboard with real-time progress- Modern Streamlit dashboard with real-time progress
+2) Install dependencies
 
-![Docker Setup](assets/docker.png)
+```powershell
+pip install -r requirements.txt
+```
 
-- Modular Flask backend with RESTful API architecture- Modular Flask backend with RESTful API architecture
+3) Run backend (development)
 
-*Docker containerization setup for easy deployment and scaling.*
+```powershell
 
-- SQLite caching for improved performance- SQLite caching for improved performance
+│   │   └── strategy5.py     # Multi-Indicator Strategy
+```
 
-## Architecture
+4) Run Streamlit UI
 
-- Docker containerization support- Docker containerization support
+```powershell
 
 ```
 
-trading-backtester/
+Or use Docker (recommended for reproducible env):
 
-├── app/
-
-│   ├── strategies/          # Trading strategy implementations## Screenshots## Screenshots
-
-│   │   ├── strategy1.py     # SMA Crossover Strategy
-
-│   │   ├── strategy2.py     # RSI Mean Reversion Strategy
-
-│   │   ├── strategy3.py     # Bollinger Bands Strategy
-
-│   │   ├── strategy4.py     # MACD Crossover Strategy### Application Dashboard### Application Dashboard
-
-│   │   └── strategy5.py     # Multi-Indicator Strategy
-
+```powershell
 │   ├── services/            # Core business logic![Trading Strategy Backtester Dashboard](assets/trades.png)![Trading Strategy Backtester Dashboard](assets/trades.png)
+```
+
+---
+
+## PRO Search & Redis (optional)
+
+Environment variables to enable PRO features:
+
+- `SERPAPI_KEY` — preferred for full-featured web search.
+- `GOOGLE_API_KEY` + `GOOGLE_CX` — Google Custom Search fallback.
+- `NEWSAPI_KEY` / `FINNHUB_API_KEY` — news sources.
+- `REDIS_URL` — Redis URL (e.g. `redis://:password@host:6379/0`) to enable cross-process caching and Redis-backed rate limiter.
+
+Behavior:
+
+- When `SERPAPI_KEY` is present the `google_adapter` will use SerpAPI and will accept advanced options (`pro_options`) such as language (`hl`/`lr`), country (`gl`), pagination (`start`), exact phrase, site-scoping and date ranges (mapped to SerpAPI `tbs`).
+- Google CSE is used when `GOOGLE_API_KEY` and `GOOGLE_CX` are set; date range support is limited — the adapter appends `after:YYYY-MM-DD` / `before:YYYY-MM-DD` tokens to queries and will use `dateRestrict` when sensible.
+- Redis is used by `app/services/cache.py` when `REDIS_URL` is set and the `redis` client is available; otherwise the system falls back to an in-memory TTL cache.
+- Check Redis health at `/health/redis` (also `/health` shows a brief redis status).
+
+---
+
+## Key developer files
+
+- `app/services/cache.py` — caching helpers; Redis-backed when available (includes `cache_redis_health`).
+- `app/services/search_adapters/google_adapter.py` — SerpAPI / Google CSE adapter with `pro_options` mapping.
+- `app/services/ai_agent_service.py` — orchestrates search, scrape, rank, summarize flows.
+- `app/routes/ai_routes.py` — endpoints for search_and_cite and resummarize workflows.
+- `app/services/report_service.py` — PDF report generation used by the UI and API.
+
+---
+
+## API summary (developer focus)
+
+- `GET /health` — basic service health (includes a short redis check if configured).
+- `GET /health/redis` — detailed Redis health and info via `cache.cache_redis_health()`.
+- `POST /api/ai/search_and_cite` — orchestration entrypoint for research queries.
+- `POST /api/ai/resummarize` — re-summarize selected sources.
+- `POST /api/report/generate_ai` — produce PDF research reports.
+
+See `app/routes/` for more endpoints.
+
+---
+
+## Testing
+
+- Run unit tests with pytest:
+
+```powershell
 
 │   │   ├── data_service.py  # Multi-API data fetching with caching
+
+If you add providers tests that require network access or keys, mark them as integration tests and run them separately.
+
+---
+
+## Contributing
+
+- Follow PEP8 and add tests for new behavior. If you change adapter behavior (SerpAPI/Google), include provider-mocked tests to avoid leaking API keys in CI.
+
+---
+
+License: MIT
+
+Built for quantitative traders and researchers.
+
 
 │   │   ├── backtest_service.py # Strategy execution and metrics calculation*Main application interface showing strategy selection, market configuration, and data gathering controls.**Main application interface showing strategy selection, market configuration, and data gathering controls.*
 

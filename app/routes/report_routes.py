@@ -86,6 +86,46 @@ def generate_report():
         return jsonify({"success": False, "error": str(e)}), 500
 
 
+@report_bp.route("/generate_ai", methods=["POST"])
+def generate_ai_report():
+    """Generate PDF report for AI research result"""
+    try:
+        data = request.get_json() or {}
+
+        research = data.get("research")
+        title = data.get("title")
+
+        if not research:
+            return (
+                jsonify({"success": False, "error": "Missing required parameter: research"}),
+                400,
+            )
+
+        logger.info(f"Generating AI research PDF report for query: {research.get('query')}")
+
+        pdf_path = report_service.create_ai_research_report(research, title=title)
+
+        if pdf_path and os.path.exists(pdf_path):
+            filename = os.path.basename(pdf_path)
+            return jsonify(
+                {
+                    "success": True,
+                    "message": "AI PDF report generated successfully",
+                    "filename": filename,
+                    "download_url": f"/api/report/download/{filename}",
+                }
+            )
+        else:
+            return (
+                jsonify({"success": False, "error": "Failed to generate AI PDF report"}),
+                500,
+            )
+
+    except Exception as e:
+        logger.error(f"Error generating AI report: {str(e)}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
 @report_bp.route("/compare", methods=["POST"])
 def generate_comparison_report():
     """Generate PDF comparison report for multiple strategies"""
