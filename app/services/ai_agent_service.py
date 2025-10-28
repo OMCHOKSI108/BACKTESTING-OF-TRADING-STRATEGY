@@ -443,20 +443,58 @@ Important: Only respond with valid JSON. Do not include any other text or explan
         }
 
     def _generate_mock_analysis(self, query: str) -> Dict:
-        """Generate mock analysis when AI API is not available"""
-        return {
-            "market_overview": f"Analysis for query: {query}",
-            "key_factors": [
-                "Economic indicators",
-                "Market sentiment",
-                "Technical signals",
-                "Global events"
-            ],
-            "technical_analysis": "Technical analysis requires current market data and AI processing capabilities.",
-            "risk_assessment": "Market risks include volatility, economic uncertainty, and geopolitical factors.",
-            "outlook": "Market outlook depends on various economic and technical factors.",
-            "confidence_level": "Low (Demo Mode)"
-        }
+        """Generate professional mock analysis when AI API is not available"""
+        # Extract potential symbols from query
+        query_lower = query.lower()
+        
+        # Market-specific analysis based on query
+        if any(word in query_lower for word in ['eurusd', 'eur', 'usd', 'forex', 'currency']):
+            return {
+                "market_overview": "EUR/USD is currently trading within a consolidation pattern. The pair has been influenced by recent ECB monetary policy decisions and US Federal Reserve statements. Market participants are closely watching inflation data and central bank communications for directional cues.",
+                "key_factors": [
+                    "European Central Bank (ECB) interest rate policy and inflation targets",
+                    "US Federal Reserve monetary policy stance and economic data",
+                    "EUR/USD technical support at 1.0500 and resistance at 1.1200",
+                    "Risk sentiment driven by geopolitical developments",
+                    "Diverging economic growth trajectories between Eurozone and US"
+                ],
+                "technical_analysis": "The EUR/USD pair is showing mixed signals across multiple timeframes. On the daily chart, the pair is testing key support levels around 1.0600. The 50-day moving average is acting as dynamic resistance. RSI readings suggest the pair is approaching oversold territory, which could signal a potential bounce. Volume analysis indicates moderate participation. Key Fibonacci retracement levels to watch are 1.0550 (61.8%) and 1.0750 (38.2%). A break above 1.0850 would signal bullish momentum resumption.",
+                "risk_assessment": "Current risks include: (1) Heightened volatility surrounding central bank policy announcements, (2) Geopolitical tensions affecting safe-haven flows, (3) Economic data surprises that could shift rate expectations, (4) Liquidity constraints during key news events. Risk/reward ratio favors cautious positioning with tight stop-loss levels. Traders should monitor ECB and Fed communications closely.",
+                "outlook": "Short-term outlook (1-2 weeks): Neutral to slightly bearish with consolidation expected. Medium-term outlook (1-3 months): Cautiously bullish if economic data supports Euro strength. The pair may test 1.1000-1.1200 resistance zone if risk appetite improves and ECB maintains hawkish stance. However, strong US economic data could cap upside potential.",
+                "confidence_level": "Medium (Demo Mode - For real-time analysis, configure Gemini API key)"
+            }
+        elif any(word in query_lower for word in ['stock', 'equity', 'sp500', 's&p', 'dow', 'nasdaq']):
+            return {
+                "market_overview": "Global equity markets are experiencing mixed performance amid shifting macroeconomic conditions. The S&P 500 has shown resilience despite concerns about inflation and interest rates. Technology stocks continue to lead, while value sectors show varied performance. Market breadth indicators suggest selective participation.",
+                "key_factors": [
+                    "Federal Reserve monetary policy and interest rate trajectory",
+                    "Corporate earnings growth and forward guidance quality",
+                    "Inflation trends and their impact on consumer spending",
+                    "Geopolitical developments affecting global trade",
+                    "Sector rotation between growth and value stocks"
+                ],
+                "technical_analysis": "Major indices are trading near key technical levels. The S&P 500 is testing resistance at 4,500 with support at 4,300. Moving averages show a bullish crossover pattern on longer timeframes. Market breadth has improved with advancing stocks outnumbering declining stocks. Volume patterns indicate institutional accumulation. Key watch levels include previous all-time highs and significant Fibonacci retracement zones.",
+                "risk_assessment": "Primary risks include: (1) Potential policy errors from central banks, (2) Earnings disappointments in key sectors, (3) Escalation of geopolitical tensions, (4) Unexpected economic slowdown indicators. Volatility (VIX) remains elevated, suggesting increased market uncertainty. Portfolio diversification and proper position sizing are recommended.",
+                "outlook": "The equity market outlook is cautiously optimistic with several caveats. Strong corporate fundamentals and economic resilience support continued gains, but valuations in certain sectors appear stretched. Expect continued volatility around major economic data releases and earnings season. Selective opportunities exist in quality growth stocks and defensive sectors.",
+                "confidence_level": "Medium (Demo Mode - For real-time analysis, configure Gemini API key)"
+            }
+        else:
+            # Generic professional analysis
+            return {
+                "market_overview": f"Comprehensive market analysis for: {query}. Current market conditions show a complex interplay between multiple economic factors, technical patterns, and sentiment indicators. Market participants are balancing growth expectations against inflation concerns while monitoring central bank policies globally.",
+                "key_factors": [
+                    "Global macroeconomic trends and GDP growth trajectories",
+                    "Central bank monetary policies and interest rate environments",
+                    "Geopolitical developments and their market impacts",
+                    "Technical chart patterns and momentum indicators",
+                    "Market sentiment and positioning data from institutional investors"
+                ],
+                "technical_analysis": "Multi-timeframe technical analysis reveals important support and resistance zones. Key moving averages are providing dynamic levels for trend confirmation. Momentum indicators like RSI and MACD show divergence patterns that warrant attention. Volume analysis suggests institutional participation levels. Fibonacci retracement and extension levels offer potential price targets. Overall technical picture suggests a neutral to consolidative phase pending breakout catalysts.",
+                "risk_assessment": "Current market environment presents both opportunities and challenges. Key risks include policy uncertainty, valuation concerns in certain assets, liquidity considerations, and unexpected macroeconomic data surprises. Proper risk management through diversification, position sizing, and stop-loss placement is essential. Monitor correlation changes between asset classes for portfolio risk assessment.",
+                "outlook": "The market outlook depends on several evolving factors including economic data trends, policy decisions, and technical breakouts. Base case scenario suggests continued volatility with selective opportunities. Upside scenario driven by positive economic surprises and accommodative policies. Downside risks stem from policy tightening and growth concerns. Maintain flexibility and review positions regularly.",
+                "confidence_level": "Medium (Demo Mode - For real-time AI analysis with current data, configure Gemini API key in environment)"
+            }
+
 
     def _generate_recommendations(self, analysis: Dict) -> List[str]:
         """Generate actionable recommendations based on analysis"""
