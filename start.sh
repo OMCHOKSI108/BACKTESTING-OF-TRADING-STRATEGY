@@ -10,7 +10,7 @@ sleep 5
 
 # Start Streamlit application
 echo "Starting Streamlit application..."
-streamlit run streamlit_app_ai_clean.py --server.port 8502 --server.address 0.0.0.0 --server.headless true --server.runOnSave false &
+streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0 --server.headless true --server.runOnSave false &
 
 # Wait for both processes
 wait

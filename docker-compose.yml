@@ -7,7 +7,7 @@ services:
         - BUILDKIT_INLINE_CACHE=1
     ports:
       - "8000:8000"   # Flask API
-      - "8502:8502"   # Streamlit UI
+      - "8501:8501"   # Streamlit UI
     environment:
       - FLASK_ENV=production
       - DOCKER_ENV=true

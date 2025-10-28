@@ -1,10 +1,11 @@
 # Perplexity-Inspired AI Agent Tab - Clean Code Snippet
 # Replace the Tab 6 section in streamlit_app.py with this
+import streamlit as st
+import requests
+import os
 
-    # Tab 6: AI Agent  
-    with tab6:
-        # Perplexity-inspired Custom CSS
-        st.markdown("""
+# Perplexity-inspired Custom CSS
+st.markdown("""
         <style>
         /* Clean Perplexity-style design */
         .perplexity-header {

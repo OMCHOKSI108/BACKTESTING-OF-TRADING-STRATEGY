@@ -38,7 +38,7 @@ st.set_page_config(
 # API base URL
 import os
 if os.getenv('DOCKER_ENV'):
-    API_BASE = "http://trading-backtester:8000"
+    API_BASE = "http://localhost:8000"  # Within container, use localhost
     DISPLAY_API_BASE = "http://localhost:8000"
 else:
     API_BASE = "http://localhost:8000"

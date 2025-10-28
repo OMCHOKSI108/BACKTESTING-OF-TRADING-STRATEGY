@@ -36,7 +36,7 @@ class Config:
     JSON_SORT_KEYS = False
 
     # CORS Settings
-    CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:8502,http://localhost:8000").split(",")
+    CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:8501,http://localhost:8000").split(",")
 
     # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///app.db")
