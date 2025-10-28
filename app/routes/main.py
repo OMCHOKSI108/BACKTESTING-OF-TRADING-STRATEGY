@@ -36,7 +36,7 @@ def index():
             "strategies": "/strategies/*",
         },
         "status": "running",
-        "port": 3000,
+        "port": 8000,
     }
 
     return render_template("index.html", backend_info=backend_info)

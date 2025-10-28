@@ -13,20 +13,23 @@ def run_flask_app():
     """Run the Flask backend application"""
     print("🚀 Starting Enhanced Trading Strategy Backtester...")
     print("🔧 Backend: Flask API Server")
-    print("🌐 API available at: http://localhost:3000")
+    print("🌐 API available at: http://localhost:8000")
     print()
     print("Press Ctrl+C to stop the server")
     print("-" * 50)
 
     # Create and run Flask app
     app = create_app()
-    app.run(host='0.0.0.0', port=3000, debug=os.getenv('FLASK_ENV') == 'development')
+    # SECURITY FIX: Bind to localhost only, never 0.0.0.0 in production
+    # Debug mode should be explicitly disabled in production
+    debug_mode = os.getenv('FLASK_ENV') == 'development' and os.getenv('DOCKER_ENV') != 'true'
+    app.run(host='127.0.0.1', port=8000, debug=debug_mode)
 
 def run_streamlit_app():
     """Run the Streamlit frontend application"""
     print("🚀 Starting Enhanced Trading Strategy Backtester...")
     print("📊 Frontend: Streamlit Dashboard")
-    print("🌐 UI available at: http://localhost:8501")
+    print("🌐 UI available at: http://localhost:8502")
     print()
     print("Press Ctrl+C to stop the server")
     print("-" * 50)
@@ -34,8 +37,8 @@ def run_streamlit_app():
     # Run Streamlit
     subprocess.run([
         sys.executable, "-m", "streamlit", "run", "streamlit_app.py",
-        "--server.port", "8501",
-        "--server.address", "0.0.0.0"
+        "--server.port", "8502",
+        "--server.address", "127.0.0.1"
     ])
 
 def run_both():
@@ -43,15 +46,15 @@ def run_both():
     print("🚀 Starting Enhanced Trading Strategy Backtester...")
     print("🔧 Backend: Flask API Server")
     print("📊 Frontend: Streamlit Dashboard")
-    print("🌐 API: http://localhost:3000")
-    print("🌐 UI: http://localhost:8501")
+    print("🌐 API: http://localhost:8000")
+    print("🌐 UI: http://localhost:8502")
     print()
     print("Press Ctrl+C to stop both servers")
     print("-" * 50)
 
     # Start Flask in background
     flask_process = subprocess.Popen([
-        sys.executable, "-m", "flask", "run", "--host=0.0.0.0", "--port=3000"
+        sys.executable, "-m", "flask", "run", "--host=127.0.0.1", "--port=8000"
     ], cwd=os.path.dirname(__file__), env={**os.environ, "FLASK_APP": "app"})
 
     # Wait a moment for Flask to start
@@ -62,8 +65,8 @@ def run_both():
         # Start Streamlit
         subprocess.run([
             sys.executable, "-m", "streamlit", "run", "streamlit_app.py",
-            "--server.port", "8501",
-            "--server.address", "0.0.0.0"
+            "--server.port", "8502",
+            "--server.address", "127.0.0.1"
         ])
     except KeyboardInterrupt:
         print("\n🛑 Shutting down servers...")

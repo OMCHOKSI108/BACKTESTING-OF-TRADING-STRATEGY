@@ -38,11 +38,11 @@ st.set_page_config(
 # API base URL
 import os
 if os.getenv('DOCKER_ENV'):
-    API_BASE = "http://trading-backtester:3000"
-    DISPLAY_API_BASE = "http://localhost:3000"
+    API_BASE = "http://trading-backtester:8000"
+    DISPLAY_API_BASE = "http://localhost:8000"
 else:
-    API_BASE = "http://localhost:3000"
-    DISPLAY_API_BASE = "http://localhost:3000"
+    API_BASE = "http://localhost:8000"
+    DISPLAY_API_BASE = "http://localhost:8000"
 
 def sanitize_html(text: str) -> str:
     """Sanitize HTML content to prevent XSS attacks"""

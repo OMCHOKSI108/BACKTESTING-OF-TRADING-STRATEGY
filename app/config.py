@@ -36,7 +36,7 @@ class Config:
     JSON_SORT_KEYS = False
 
     # CORS Settings
-    CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:8501,http://localhost:3000").split(",")
+    CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:8502,http://localhost:8000").split(",")
 
     # Database
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///app.db")
@@ -63,12 +63,28 @@ class Config:
             if not getattr(Config, key, None):
                 raise ValueError(f"Required configuration {key} is not set")
 
-        # Validate API keys format (basic check)
+        # Validate API keys format (basic check) - warn if not set but don't fail
         api_keys = ['FINNHUB_API_KEY', 'GEMINI_API_KEY', 'ALPHA_VANTAGE_API_KEY']
         for key in api_keys:
             value = getattr(Config, key, None)
             if value and not isinstance(value, str):
                 raise ValueError(f"API key {key} must be a string")
+            elif not value:
+                print(f"WARNING: {key} not set - some features may be limited")
+
+        # Validate CORS origins format
+        cors_origins = getattr(Config, 'CORS_ORIGINS', [])
+        if isinstance(cors_origins, str):
+            cors_origins = cors_origins.split(',')
+        for origin in cors_origins:
+            origin = origin.strip()
+            if origin and not (origin.startswith('http://') or origin.startswith('https://')):
+                raise ValueError(f"Invalid CORS origin format: {origin}")
+
+        # Validate database URI format (basic check)
+        db_uri = getattr(Config, 'SQLALCHEMY_DATABASE_URI', '')
+        if db_uri and not (db_uri.startswith('sqlite:///') or db_uri.startswith('postgresql://')):
+            print(f"WARNING: Database URI format may be invalid: {db_uri}")
 
 
 class DevelopmentConfig(Config):

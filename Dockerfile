@@ -38,10 +38,10 @@ RUN mkdir -p app/data/raw app/data/processed app/data/trade_history app/reports 
 
 # Add health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3000/health || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
 # Expose ports
-EXPOSE 3000 8501
+EXPOSE 8000 8502
 
 # Set environment variables for security
 ENV PYTHONUNBUFFERED=1 \

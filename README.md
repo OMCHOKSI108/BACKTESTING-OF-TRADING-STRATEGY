@@ -59,6 +59,49 @@ A comprehensive web application for backtesting trading strategies across multip
 
 *Docker containerization setup for easy deployment and scaling.*
 
+## Notebook Backtesting Results
+
+### EUR/USD Forex Trading Strategy Performance
+
+![EUR/USD Trading Performance](notebooks/assets/EURUSD.png)
+
+*EMA Crossover Strategy with ATR Volatility Filter on EUR/USD (1h timeframe, 2023-2025)*
+
+**Performance Metrics:**
+- **Total Return**: -2.49%
+- **Win Rate**: 34.03%
+- **Sharpe Ratio**: -0.28
+- **Max Drawdown**: 9.36%
+- **Strategy**: EMA Crossover (20/50) with ATR Filter
+- **Timeframe**: 1-hour candles
+- **Period**: ~2 years of historical data
+
+### XAU/USD Gold Trading Strategy Performance
+
+![XAU/USD Trading Performance](notebooks/assets/XAUUSD.png)
+
+*EMA Crossover Strategy with ATR Volatility Filter on XAU/USD (1h timeframe, 2023-2025)*
+
+**Performance Metrics:**
+- **Total Return**: +71.48%
+- **Win Rate**: 45.55%
+- **Sharpe Ratio**: 3.18
+- **Max Drawdown**: 6.01%
+- **Strategy**: EMA Crossover (20/50) with ATR Filter
+- **Timeframe**: 1-hour candles
+- **Period**: ~2 years of historical data
+
+### Strategy Analysis
+
+The backtesting results demonstrate significant performance differences between EUR/USD and XAU/USD markets using the same EMA crossover strategy with ATR volatility filtering:
+
+- **XAU/USD outperformed EUR/USD** with a 71.48% total return vs -2.49% loss
+- **Risk-adjusted returns** show XAU/USD with a Sharpe ratio of 3.18 vs EUR/USD's -0.28
+- **Drawdown management** was better for XAU/USD (6.01% max drawdown vs 9.36%)
+- **Win rates** were comparable at 45.55% for XAU/USD vs 34.03% for EUR/USD
+
+These results highlight the importance of market-specific strategy optimization and the potential of gold (XAU/USD) as a strong performer in algorithmic trading strategies.
+
 ## Architecture
 
 ```
@@ -154,8 +197,8 @@ cp .env.example .env
 docker-compose up --build
 
 # Access the application
-# Frontend: http://localhost:8501
-# Backend API: http://localhost:3000
+# Frontend: http://localhost:8502
+# Backend API: http://localhost:8000
 ```
 
 ### Option 2: Local Development
@@ -175,8 +218,8 @@ python app.py flask
 python app.py streamlit
 
 # Access the application
-# Frontend: http://localhost:8501
-# Backend API: http://localhost:3000
+# Frontend: http://localhost:8502
+# Backend API: http://localhost:8000
 ```
 
 ### Option 3: Direct Execution
@@ -189,7 +232,7 @@ streamlit run streamlit_app.py
 python app.py both
 
 # Or run Flask app directly
-python -c "from app import create_app; app = create_app(); app.run(port=3000)"
+python -c "from app import create_app; app = create_app(); app.run(port=8000)"
 ```
 
 ## Usage Workflow
@@ -287,7 +330,7 @@ GOOGLE_SEARCH_ENGINE_ID=your_google_search_engine_id_here
 
 # Application Settings
 FLASK_ENV=development
-STREAMLIT_SERVER_PORT=8501
+STREAMLIT_SERVER_PORT=8502
 DOCKER_ENV=true
 ```
 

@@ -19,14 +19,18 @@ logging.basicConfig(
     ]
 )
 
-# Security headers configuration
+# Security headers configuration - more restrictive CSP
 csp = {
     'default-src': "'self'",
-    'script-src': "'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
-    'style-src': "'self' 'unsafe-inline' https://fonts.googleapis.com",
+    'script-src': "'self' https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com",
+    'style-src': "'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net",
     'font-src': "'self' https://fonts.gstatic.com",
     'img-src': "'self' data: https:",
-    'connect-src': "'self' https://api.github.com"
+    'connect-src': "'self' https://api.github.com https://generativelanguage.googleapis.com https://www.googleapis.com",
+    'frame-src': "'none'",
+    'object-src': "'none'",
+    'base-uri': "'self'",
+    'form-action': "'self'"
 }
 
 def create_app(config_name=None):
@@ -51,7 +55,7 @@ def create_app(config_name=None):
     limiter = Limiter(
         app=app,
         key_func=get_remote_address,
-        default_limits=["200 per day", "50 per hour"]
+        default_limits=["100 per day", "20 per hour", "5 per minute"]
     )
 
     # Security headers (only in production, but don't force HTTPS in containers)
